@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#174c36">
+<title>ILIRI COLOR</title>
+
+<style>
+:root{
+  --green:#0d5b3d; --green2:#0b6b45; --gold:#e3ba4f;
+  --bg:#f4f4f1; --card:#ffffff; --text:#17201c; --muted:#68736d;
+  --border:#d7ddd9;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+body{min-height:100vh}
+.app{max-width:920px;margin:0 auto;padding:env(safe-area-inset-top) 10px calc(18px + env(safe-area-inset-bottom))}
+header{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px;border-radius:20px;background:linear-gradient(135deg,#0d5b3d,#0b6b45);
+  box-shadow:0 4px 14px #0002;margin-bottom:10px
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{
+  width:48px;height:48px;border-radius:14px;background:#0b5137;
+  display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:22px;
+  box-shadow:inset 0 0 0 1px #ffffff24,0 2px 8px #0002;flex:0 0 auto
+}
+h1{font-size:22px;margin:0;letter-spacing:.4px;color:#fff;white-space:nowrap}
+.sub{font-size:12px;color:#dceae4;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.headerBtns{display:flex;gap:7px;flex:0 0 auto}
+.headerBtn{
+  background:transparent;color:#fff;border:1px solid #ffffffa8;border-radius:12px;
+  padding:10px 12px;font-size:14px;font-weight:800
+}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:10px;box-shadow:0 2px 12px #00000010}
+.stage{
+  position:relative;width:100%;min-height:390px;background:#e6e9e7;border-radius:18px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+canvas{display:block;max-width:100%;width:100%;height:auto;touch-action:none}
+#selectionCanvas{
+  position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3
+}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .cam{font-size:54px}
+input[type=file]{display:none}
+.controls{padding:14px 2px 2px}
+.controls-title{font-size:17px;font-weight:900;margin:0 0 10px 2px}
+.palette{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+.palette::-webkit-scrollbar{display:none}
+.swatch{
+  flex:0 0 52px;height:52px;border-radius:50%;border:4px solid #fff;padding:0;
+  box-shadow:0 0 0 1px #bcc5c0,0 2px 7px #0002;position:relative
+}
+.swatch.active{box-shadow:0 0 0 3px #0d5b3d,0 2px 7px #0002}
+.swatch.active:after{
+  content:"✓";position:absolute;inset:0;display:grid;place-items:center;
+  font-size:25px;font-weight:900;color:#0b573b;text-shadow:0 1px 1px #fff
+}
+.colorline{display:flex;gap:9px;align-items:center;margin-top:2px}
+.colorline label{font-size:13px;color:var(--muted)}
+.colorline input[type=color]{width:46px;height:34px;border:0;padding:0;background:transparent}
+.actions{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:13px
+}
+button{
+  border:0;border-radius:13px;padding:12px 8px;font-size:13px;font-weight:800;
+  background:var(--green);color:white
+}
+button.secondary{background:#f7f8f7;color:#1f2924;border:1px solid var(--border)}
+button.danger{background:#f7f8f7;color:#7b2525;border:1px solid #e0cccc}
+button:disabled{opacity:.42}
+#paintBtn{background:#f7f8f7;color:#1f2924;border:1px solid var(--border)}
+#saveBtn{background:var(--green);color:#fff}
+.actionIcon{font-size:20px;display:block;line-height:1;margin-bottom:5px}
+.hint{margin:10px 4px 2px;font-size:12px;line-height:1.4;color:var(--muted)}
+.status{
+  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:5;
+  background:#111d;color:#fff;border-radius:999px;padding:8px 12px;font-size:12px;
+  opacity:0;pointer-events:none;transition:.2s;white-space:nowrap
+}
+.status.show{opacity:1}
+.compareBadge{
+  position:absolute;top:12px;right:12px;z-index:6;background:#111d;color:#fff;
+  border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;display:none
+}
+.compareBadge.show{display:block}
+.selectionBadge{
+  position:absolute;left:12px;top:12px;z-index:6;background:#ff7b19;color:#fff;
+  border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;display:none
+}
+.selectionBadge.show{display:block}
+@media(max-width:560px){
+  .app{padding-left:8px;padding-right:8px}
+  header{padding:10px 9px}
+  .logo{width:44px;height:44px}
+  h1{font-size:19px}
+  .sub{font-size:11px;max-width:170px}
+  .headerBtn{padding:9px 10px;font-size:12px}
+  .actions{gap:5px}
+  .actions button{padding:10px 3px;font-size:11px}
+  .actionIcon{font-size:18px}
+}
+@media(min-width:700px){.stage{min-height:540px}}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="logo">IC</div>
+      <div>
+        <h1>ILIRI COLOR</h1>
+        <div class="sub">Provo ngjyrat direkt mbi dhomë</div>
+      </div>
+    </div>
+    <div class="headerBtns">
+      <button class="headerBtn" id="newPhotoBtn">▣ Foto</button>
+      <button class="headerBtn" id="topSaveBtn">▣ Ruaj</button>
+    </div>
+  </header>
+
+
+  <div class="card">
+    <div class="stage" id="stage">
+      <div class="empty" id="emptyState">
+        <div class="cam">📷</div>
+        <div>Vendos një foto të dhomës</div>
+        <button id="openPhotoBtn">Zgjidh foton</button>
+      </div>
+      <canvas id="canvas" hidden></canvas>
+      <canvas id="selectionCanvas" hidden></canvas>
+      <div class="selectionBadge" id="selectionBadge">FAQJA E ZGJEDHUR</div>
+      <div class="compareBadge" id="compareBadge">PARA</div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="controls" id="controls" hidden>
+      <div class="controls-title">Zgjidh ngjyrën</div>
+      <div class="palette" id="palette"></div>
+
+      <div class="colorline">
+        <label for="customColor">Ngjyrë tjetër:</label>
+        <input id="customColor" type="color" value="#d7d1c5">
+      </div>
+
+      <div class="actions">
+        <button class="secondary" id="undoBtn"><span class="actionIcon">↶</span>Kthim pas</button>
+        <button id="paintBtn"><span class="actionIcon">▰</span>Lyej</button>
+        <button class="secondary" id="compareBtn"><span class="actionIcon">◫</span>Krahaso</button>
+        <button class="danger" id="deleteBtn"><span class="actionIcon">🗑</span>Fshije</button>
+        <button id="saveBtn"><span class="actionIcon">▣</span>Ruaj foton</button>
+      </div>
+
+      <div class="hint">
+        1. Zgjidh ngjyrën. 2. Prek faqen e murit. Aplikacioni e shënon me vijë portokalli.
+        3. Nëse kufiri është i saktë, shtyp <b>Lyej</b>.
+      </div>
+
+    </div>
+  </div>
+
+  <input id="photoInput" type="file" accept="image/*">
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d', {willReadFrequently:true});
+  const selectionCanvas = document.getElementById('selectionCanvas');
+  const sctx = selectionCanvas.getContext('2d');
+  const selectionBadge = document.getElementById('selectionBadge');
+  const input = document.getElementById('photoInput');
+  const empty = document.getElementById('emptyState');
+  const controls = document.getElementById('controls');
+  const stage = document.getElementById('stage');
+  const palette = document.getElementById('palette');
+  const custom = document.getElementById('customColor');
+  const statusEl = document.getElementById('status');
+  const badge = document.getElementById('compareBadge');
+
+  const colors = [
+    '#f2efe6','#e3ddd0','#d5cfc1','#c9b9a7','#b8a99a',
+    '#d7e0d2','#b9c9b6','#95aa91','#8fa7ae','#becbd0',
+    '#d6c4c7','#c5a7ab','#d9c696','#c9a86a','#af9075',
+    '#b9b7b0','#8e928e','#686d6a','#454b49','#252b29'
+  ];
+  let selected = colors[0];
+  let original = null;
+  let history = [];
+  let comparing = false;
+  let isPainting = false;
+  let selectedMask = null;
+  let selectedMaskCount = 0;
+
+  function toast(t){
+    statusEl.textContent=t;
+    statusEl.classList.add('show');
+    clearTimeout(toast.t);
+    toast.t=setTimeout(()=>statusEl.classList.remove('show'),1600);
+  }
+
+  colors.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='swatch'+(i===0?' active':'');
+    b.style.background=c;
+    b.title=c;
+    b.dataset.color=c;
+    b.addEventListener('click',()=>{
+      selected=c;
+      custom.value=c;
+      [...palette.children].forEach(x=>x.classList.toggle('active',x===b));
+    });
+    palette.appendChild(b);
+  });
+
+  custom.addEventListener('input',()=>{
+    selected=custom.value;
+    [...palette.children].forEach(x=>x.classList.remove('active'));
+  });
+
+  document.getElementById('openPhotoBtn').onclick=()=>input.click();
+  document.getElementById('newPhotoBtn').onclick=()=>input.click();
+
+  input.addEventListener('change', e=>{
+    const f=e.target.files && e.target.files[0];
+    if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        // Keep image reasonably sized for iPhone memory.
+        const max=1600;
+        let w=img.naturalWidth,h=img.naturalHeight;
+        const s=Math.min(1,max/Math.max(w,h));
+        w=Math.round(w*s); h=Math.round(h*s);
+        canvas.width=w; canvas.height=h;
+        ctx.drawImage(img,0,0,w,h);
+        original=ctx.getImageData(0,0,w,h);
+        history=[]; selectedMask=null; selectedMaskCount=0;
+        selectionCanvas.width=w; selectionCanvas.height=h; sctx.clearRect(0,0,w,h);
+        canvas.hidden=false; selectionCanvas.hidden=false; empty.hidden=true; controls.hidden=false;
+        fitStage();
+        toast('Fotoja u ngarkua');
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(f);
+    input.value='';
+  });
+
+  function fitStage(){
+    if(!canvas.width) return;
+    const ratio=canvas.height/canvas.width;
+    canvas.style.width='100%';
+    canvas.style.height='auto';
+    stage.style.minHeight='0';
+    stage.style.aspectRatio = canvas.width + ' / ' + canvas.height;
+    selectionCanvas.style.width='100%'; selectionCanvas.style.height='100%';
+  }
+
+  function hexRgb(hex){
+    const n=parseInt(hex.slice(1),16);
+    return [(n>>16)&255,(n>>8)&255,n&255];
+  }
+  const lum=(r,g,b)=>0.2126*r+0.7152*g+0.0722*b;
+  const dist=(a,b)=>{
+    // perceptual-ish RGB distance, emphasizing luminance less than chroma.
+    const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2];
+    return Math.sqrt(0.30*dr*dr+0.59*dg*dg+0.11*db*db);
+  };
+
+  function sampleStats(data,w,h,x,y){
+    const vals=[];
+    const rad=3;
+    for(let yy=Math.max(0,y-rad); yy<=Math.min(h-1,y+rad); yy++){
+      for(let xx=Math.max(0,x-rad); xx<=Math.min(w-1,x+rad); xx++){
+        const i=(yy*w+xx)*4;
+        vals.push([data[i],data[i+1],data[i+2]]);
+      }
+    }
+    const avg=[0,0,0];
+    vals.forEach(v=>{avg[0]+=v[0];avg[1]+=v[1];avg[2]+=v[2]});
+    avg[0]/=vals.length;avg[1]/=vals.length;avg[2]/=vals.length;
+    let variance=0;
+    vals.forEach(v=>variance+=dist(v,avg)**2);
+    variance/=vals.length;
+    return {avg, std:Math.sqrt(variance)};
+  }
+
+  function gradientAt(data,w,h,x,y){
+    const xm=Math.max(0,x-1), xp=Math.min(w-1,x+1);
+    const ym=Math.max(0,y-1), yp=Math.min(h-1,y+1);
+    const i1=(y*w+xm)*4, i2=(y*w+xp)*4;
+    const i3=(ym*w+x)*4, i4=(yp*w+x)*4;
+    const gx=Math.abs(lum(data[i2],data[i2+1],data[i2+2])-lum(data[i1],data[i1+1],data[i1+2]));
+    const gy=Math.abs(lum(data[i4],data[i4+1],data[i4+2])-lum(data[i3],data[i3+1],data[i3+2]));
+    return gx+gy;
+  }
+
+
+  function clearSelection(){
+    selectedMask=null; selectedMaskCount=0;
+    if(selectionCanvas.width) sctx.clearRect(0,0,selectionCanvas.width,selectionCanvas.height);
+    selectionBadge.classList.remove('show');
+  }
+
+  function drawSelection(mask){
+    if(!mask || !canvas.width) return;
+    const w=canvas.width,h=canvas.height;
+    selectionCanvas.width=w; selectionCanvas.height=h;
+    const img=sctx.createImageData(w,h);
+    const od=img.data;
+    for(let y=1;y<h-1;y++){
+      for(let x=1;x<w-1;x++){
+        const p=y*w+x;
+        if(!mask[p]) continue;
+        const edge = !mask[p-1] || !mask[p+1] || !mask[p-w] || !mask[p+w];
+        if(edge){
+          const i=p*4;
+          od[i]=255; od[i+1]=118; od[i+2]=16; od[i+3]=255;
+        }
+      }
+    }
+    sctx.putImageData(img,0,0);
+    sctx.globalAlpha=.14;
+    sctx.fillStyle='#ff7b19';
+    for(let y=0;y<h;y+=3){
+      for(let x=0;x<w;x+=3){
+        if(mask[y*w+x]) sctx.fillRect(x,y,3,3);
+      }
+    }
+    sctx.globalAlpha=1;
+    selectionBadge.classList.add('show');
+  }
+
+  function paintRegion(x,y){
+
+    if(!original || isPainting || comparing) return;
+    isPainting=true;
+    const current=ctx.getImageData(0,0,canvas.width,canvas.height);
+    clearSelection();
+
+    const W=canvas.width,H=canvas.height,N=W*H;
+    const maxSide=620;
+    const scale=Math.min(1,maxSide/Math.max(W,H));
+    const w=Math.max(1,Math.round(W*scale)), h=Math.max(1,Math.round(H*scale));
+    const pc=document.createElement('canvas');
+    pc.width=w; pc.height=h;
+    const pctx=pc.getContext('2d',{willReadFrequently:true});
+    pctx.imageSmoothingEnabled=true;
+    pctx.imageSmoothingQuality='high';
+    pctx.drawImage(canvas,0,0,w,h);
+    const proxy=pctx.getImageData(0,0,w,h), d=proxy.data, PN=w*h;
+    const sx=Math.max(0,Math.min(w-1,Math.round(x*scale)));
+    const sy=Math.max(0,Math.min(h-1,Math.round(y*scale)));
+    const start=sy*w+sx;
+
+    // Luminance + chroma representation. Chroma changes little with light/shadow,
+    // so the same wall can be followed even when one side is darker.
+    const gray=new Float32Array(PN), cr=new Float32Array(PN), cb=new Float32Array(PN);
+    for(let p=0;p<PN;p++){
+      const i=p*4, r=d[i], g=d[i+1], b=d[i+2];
+      const L=lum(r,g,b);
+      gray[p]=L;
+      const sum=r+g+b+1;
+      cr[p]=r/sum; cb[p]=b/sum;
+    }
+
+    // Multi-scale architectural edge map. Corners and ceiling lines are usually
+    // long continuous edges, while wall texture is short and fragmented.
+    const edge=new Float32Array(PN);
+    for(let yy=3;yy<h-3;yy++){
+      for(let xx=3;xx<w-3;xx++){
+        const p=yy*w+xx;
+        const gx1=Math.abs(gray[p+1]-gray[p-1]);
+        const gy1=Math.abs(gray[p+w]-gray[p-w]);
+        const gx3=Math.abs(gray[p+3]-gray[p-3])*.55;
+        const gy3=Math.abs(gray[p+3*w]-gray[p-3*w])*.55;
+        edge[p]=Math.max(gx1+gy1,gx3+gy3);
+      }
+    }
+
+    // Low threshold first, then keep only long connected edge chains.
+    const lowEdge=14, strongEdge=38;
+    const candidate=new Uint8Array(PN), visited=new Uint8Array(PN), barrier=new Uint8Array(PN);
+    for(let p=0;p<PN;p++) if(edge[p]>=lowEdge) candidate[p]=1;
+    const q=new Int32Array(PN);
+    const minChain=Math.max(12,Math.round(Math.min(w,h)*0.035));
+    for(let p0=0;p0<PN;p0++){
+      if(!candidate[p0]||visited[p0]) continue;
+      let head=0,tail=0; q[tail++]=p0; visited[p0]=1;
+      const comp=[];
+      let minx=w,maxx=0,miny=h,maxy=0,strong=false;
+      while(head<tail){
+        const p=q[head++]; comp.push(p);
+        const yy=(p/w)|0, xx=p-yy*w;
+        minx=Math.min(minx,xx); maxx=Math.max(maxx,xx); miny=Math.min(miny,yy); maxy=Math.max(maxy,yy);
+        if(edge[p]>=strongEdge) strong=true;
+        for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+          if(!dx&&!dy) continue;
+          const nx=xx+dx, ny=yy+dy;
+          if(nx<0||ny<0||nx>=w||ny>=h) continue;
+          const np=ny*w+nx;
+          if(candidate[np]&&!visited[np]){visited[np]=1;q[tail++]=np;}
+        }
+      }
+      const span=Math.max(maxx-minx,maxy-miny);
+      if(strong || comp.length>=minChain || span>=minChain){
+        for(const p of comp) barrier[p]=1;
+      }
+    }
+
+    // Thicken structural edges, but open a small disk around the touched point so
+    // the user can tap close to a corner without the seed being trapped.
+    const thick=barrier.slice();
+    for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
+      const p=yy*w+xx;
+      if(!barrier[p]) continue;
+      for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+        const nx=xx+dx, ny=yy+dy;
+        if(nx>=0&&ny>=0&&nx<w&&ny<h) thick[ny*w+nx]=1;
+      }
+    }
+    for(let yy=Math.max(0,sy-4);yy<=Math.min(h-1,sy+4);yy++)
+      for(let xx=Math.max(0,sx-4);xx<=Math.min(w-1,sx+4);xx++) thick[yy*w+xx]=0;
+
+    // Seed model from a clean core around the tap.
+    let sr=0,sg=0,sb=0,sl=0,nseed=0;
+    for(let yy=Math.max(0,sy-5);yy<=Math.min(h-1,sy+5);yy++){
+      for(let xx=Math.max(0,sx-5);xx<=Math.min(w-1,sx+5);xx++){
+        const p=yy*w+xx, i=p*4;
+        if(thick[p]) continue;
+        sr+=cr[p]; sb+=cb[p]; sl+=gray[p]; sg+=(d[i+1]/(d[i]+d[i+1]+d[i+2]+1)); nseed++;
+      }
+    }
+    if(!nseed) nseed=1;
+    sr/=nseed; sg/=nseed; sb/=nseed; sl/=nseed;
+
+    const pmask=new Uint8Array(PN), seen=new Uint8Array(PN), queue=new Int32Array(PN);
+    let head=0,tail=0,count=0;
+    queue[tail++]=start;
+    const chromaTol=.105; // tolerant to shadows, strict across different paint/materials
+    const lightTol=92;
+    while(head<tail){
+      const p=queue[head++];
+      if(seen[p]) continue;
+      seen[p]=1;
+      if(p!==start && thick[p]) continue;
+      const yy=(p/w)|0, xx=p-yy*w;
+      const i=p*4;
+      const sum=d[i]+d[i+1]+d[i+2]+1;
+      const rr=d[i]/sum, gg=d[i+1]/sum, bb=d[i+2]/sum;
+      const cd=Math.sqrt((rr-sr)*(rr-sr)+(gg-sg)*(gg-sg)+(bb-sb)*(bb-sb));
+      if(cd>chromaTol) continue;
+      if(Math.abs(gray[p]-sl)>lightTol && edge[p]>8) continue;
+      pmask[p]=1; count++;
+      if(xx>0&&!seen[p-1]) queue[tail++]=p-1;
+      if(xx<w-1&&!seen[p+1]) queue[tail++]=p+1;
+      if(yy>0&&!seen[p-w]) queue[tail++]=p-w;
+      if(yy<h-1&&!seen[p+w]) queue[tail++]=p+w;
+      if(tail>=PN) break;
+    }
+
+    // Fill small holes only when enclosed by the selected face.
+    for(let pass=0;pass<3;pass++){
+      const add=[];
+      for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
+        const p=yy*w+xx;
+        if(pmask[p]||thick[p]) continue;
+        let n=0;
+        if(pmask[p-1])n++; if(pmask[p+1])n++; if(pmask[p-w])n++; if(pmask[p+w])n++;
+        if(n>=3) add.push(p);
+      }
+      for(const p of add) pmask[p]=1;
+    }
+
+    let pcount=0; for(let p=0;p<PN;p++) if(pmask[p]) pcount++;
+    if(pcount>PN*.50){
+      clearSelection(); toast('Prek më në qendër të faqes së murit'); isPainting=false; return;
+    }
+    if(pcount<Math.max(40,PN*.002)){
+      clearSelection(); toast('Prek një pjesë më të pastër të murit'); isPainting=false; return;
+    }
+
+    // Upscale without smoothing so the mask follows detected boundaries exactly.
+    const mask=new Uint8Array(N); let fullCount=0;
+    for(let yy=0;yy<H;yy++){
+      const py=Math.min(h-1,Math.floor(yy*scale));
+      for(let xx=0;xx<W;xx++){
+        const px=Math.min(w-1,Math.floor(xx*scale));
+        if(pmask[py*w+px]){mask[yy*W+xx]=1;fullCount++;}
+      }
+    }
+    selectedMask=mask; selectedMaskCount=fullCount;
+    drawSelection(mask);
+    toast('Faqja u zgjodh — shtyp Lyej');
+    isPainting=false;
+  }
+
+  function applyMask(image,mask,count){
+    const w=canvas.width,h=canvas.height,d=image.data;
+    const [tr,tg,tb]=hexRgb(selected);
+
+    // Soften mask 1 px at borders by checking neighbours.
+    for(let p=0;p<mask.length;p++){
+      if(!mask[p]) continue;
+      const y=(p/w)|0,x=p-y*w,i=p*4;
+      const L=lum(d[i],d[i+1],d[i+2])/255;
+      // Preserve light/shadow and some original character.
+      const shade=0.50+L*0.62;
+      const nr=Math.min(255,tr*shade), ng=Math.min(255,tg*shade), nb=Math.min(255,tb*shade);
+      let alpha=.76;
+      let neighbours=0;
+      if(x>0&&mask[p-1])neighbours++;
+      if(x<w-1&&mask[p+1])neighbours++;
+      if(y>0&&mask[p-w])neighbours++;
+      if(y<h-1&&mask[p+w])neighbours++;
+      if(neighbours<3) alpha=.48;
+      d[i]=d[i]*(1-alpha)+nr*alpha;
+      d[i+1]=d[i+1]*(1-alpha)+ng*alpha;
+      d[i+2]=d[i+2]*(1-alpha)+nb*alpha;
+    }
+    ctx.putImageData(image,0,0);
+    if(count<80) toast('Prek pak më në qendër të faqes');
+    else toast('Faqja u ngjyros');
+  }
+
+  function pointFromEvent(e){
+    const r=canvas.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    const x=Math.max(0,Math.min(canvas.width-1,Math.floor((t.clientX-r.left)*canvas.width/r.width)));
+    const y=Math.max(0,Math.min(canvas.height-1,Math.floor((t.clientY-r.top)*canvas.height/r.height)));
+    return {x,y};
+  }
+  canvas.addEventListener('click', e=>{
+    const p=pointFromEvent(e);
+    paintRegion(p.x,p.y);
+  });
+
+
+  document.getElementById('paintBtn').onclick=()=>{
+    if(!selectedMask || !selectedMaskCount){
+      toast('Prek më parë faqen e murit');
+      return;
+    }
+    const current=ctx.getImageData(0,0,canvas.width,canvas.height);
+    history.push(current);
+    if(history.length>12) history.shift();
+    applyMask(current,selectedMask,selectedMaskCount);
+    clearSelection();
+  };
+
+  document.getElementById('undoBtn').onclick=()=>{
+    clearSelection();
+    if(!history.length){toast('Nuk ka veprim për t’u kthyer');return}
+    ctx.putImageData(history.pop(),0,0);
+  };
+
+  const showOriginal=()=>{
+    if(!original||comparing)return;
+    comparing=true;
+    window.__painted=ctx.getImageData(0,0,canvas.width,canvas.height);
+    ctx.putImageData(original,0,0);
+    selectionCanvas.style.visibility='hidden';
+    badge.classList.add('show');
+  };
+  const showPainted=()=>{
+    if(!comparing)return;
+    comparing=false;
+    if(window.__painted)ctx.putImageData(window.__painted,0,0);
+    selectionCanvas.style.visibility='visible';
+    badge.classList.remove('show');
+  };
+  const cb=document.getElementById('compareBtn');
+  cb.addEventListener('pointerdown',showOriginal);
+  cb.addEventListener('pointerup',showPainted);
+  cb.addEventListener('pointercancel',showPainted);
+  cb.addEventListener('pointerleave',showPainted);
+
+  const savePhoto=()=>{
+    if(!canvas.width)return;
+    const a=document.createElement('a');
+    a.download='ILIRI-COLOR-'+new Date().toISOString().slice(0,10)+'.jpg';
+    a.href=canvas.toDataURL('image/jpeg',.94);
+    document.body.appendChild(a);a.click();a.remove();
+    toast('Fotoja u ruajt');
+  };
+  document.getElementById('saveBtn').onclick=savePhoto;
+  document.getElementById('topSaveBtn').onclick=savePhoto;
+
+  document.getElementById('deleteBtn').onclick=()=>{
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    canvas.width=0;canvas.height=0;
+    original=null;history=[];window.__painted=null;selectedMask=null;selectedMaskCount=0;
+    sctx.clearRect(0,0,selectionCanvas.width,selectionCanvas.height);selectionBadge.classList.remove('show');
+    canvas.hidden=true;selectionCanvas.hidden=true;controls.hidden=true;empty.hidden=false;
+    stage.style.aspectRatio='';stage.style.minHeight='';
+    toast('Fotoja u fshi');
+  };
+})();
+</script>
+</body>
+</html>
