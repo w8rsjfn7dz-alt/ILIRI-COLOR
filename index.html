@@ -133,7 +133,7 @@ button:disabled{opacity:.45}
 
       <div class="hint">
         Zgjidh një ngjyrë dhe pastaj prek faqen e murit që do të lyesh.
-        Aplikacioni ndjek zonën e lidhur rreth pikës së prekur dhe ruan dritë-hijet e fotos.
+        Aplikacioni ndalon te qoshet dhe kufijtë e sipërfaqes së prekur dhe ruan dritë-hijet e fotos.
       </div>
     </div>
   </div>
@@ -276,82 +276,57 @@ button:disabled{opacity:.45}
     history.push(current);
     if(history.length>12) history.shift();
 
-    const w=canvas.width,h=canvas.height,d=current.data;
+    const w=canvas.width,h=canvas.height,d=current.data,N=w*h;
     const stats=sampleStats(d,w,h,x,y);
     const seed=stats.avg;
-    // Auto tolerance: enough for shaded wall, conservative around corners/objects.
-    const colorTol=Math.max(25,Math.min(58,27+stats.std*1.15));
-    const localTol=Math.max(22,Math.min(48,24+stats.std*.8));
-    const edgeLimit=Math.max(42,Math.min(78,52+stats.std*.7));
-
-    const N=w*h;
-    const seen=new Uint8Array(N);
-    const mask=new Uint8Array(N);
-    const qx=new Int32Array(N);
-    const qy=new Int32Array(N);
-    let head=0,tail=0;
-    qx[tail]=x; qy[tail]=y; tail++;
-    let count=0;
+    // Conservative surface selection: corners and changes of plane act as hard barriers.
+    const seedTol=Math.max(22,Math.min(48,24+stats.std*.70));
+    const stepTol=Math.max(10,Math.min(24,13+stats.std*.35));
+    const edgeLimit=Math.max(24,Math.min(48,29+stats.std*.40));
+    const seen=new Uint8Array(N), mask=new Uint8Array(N);
+    const queue=new Int32Array(N);
+    let head=0,tail=0,count=0;
+    const start=y*w+x; queue[tail++]=start;
 
     while(head<tail){
-      const cx=qx[head], cy=qy[head]; head++;
-      if(cx<0||cy<0||cx>=w||cy>=h) continue;
-      const p=cy*w+cx;
+      const p=queue[head++];
       if(seen[p]) continue;
       seen[p]=1;
-      const i=p*4;
+      const cy=(p/w)|0,cx=p-cy*w,i=p*4;
       const c=[d[i],d[i+1],d[i+2]];
-      if(dist(c,seed)>colorTol) continue;
-      if(gradientAt(d,w,h,cx,cy)>edgeLimit && Math.abs(cx-x)+Math.abs(cy-y)>8) continue;
-
-      // Nearby color continuity prevents jumping across different surfaces.
-      if(cx>0){
-        const j=(cy*w+cx-1)*4;
-        if(dist(c,[d[j],d[j+1],d[j+2]])>localTol) continue;
-      }
+      if(dist(c,seed)>seedTol) continue;
+      if(p!==start && gradientAt(d,w,h,cx,cy)>edgeLimit) continue;
       mask[p]=1; count++;
 
-      if(cx>0){qx[tail]=cx-1;qy[tail]=cy;tail++}
-      if(cx<w-1){qx[tail]=cx+1;qy[tail]=cy;tail++}
-      if(cy>0){qx[tail]=cx;qy[tail]=cy-1;tail++}
-      if(cy<h-1){qx[tail]=cx;qy[tail]=cy+1;tail++}
-      if(tail>=N) break;
+      const add=(np)=>{
+        if(np<0||np>=N||seen[np]||tail>=N) return;
+        const ni=np*4, nc=[d[ni],d[ni+1],d[ni+2]];
+        // Do not cross a sharp color/luminance jump between adjacent pixels.
+        if(dist(c,nc)>stepTol) return;
+        if(Math.abs(lum(c[0],c[1],c[2])-lum(nc[0],nc[1],nc[2]))>18) return;
+        queue[tail++]=np;
+      };
+      if(cx>0) add(p-1);
+      if(cx<w-1) add(p+1);
+      if(cy>0) add(p-w);
+      if(cy<h-1) add(p+w);
     }
 
-    // If selection is suspiciously huge, retry more conservatively.
-    if(count > N*0.48){
+    // A single tap should never recolor most of the photograph.
+    if(count>N*.34){
       history.pop();
-      conservativePaint(x,y,current,Math.max(18,colorTol*.72),Math.max(33,edgeLimit*.72));
+      toast('Prek më në qendër të faqes së murit');
       isPainting=false;
       return;
     }
-
-    applyMask(current,mask,count);
-    isPainting=false;
-  }
-
-  function conservativePaint(x,y,current,colorTol,edgeLimit){
-    const w=canvas.width,h=canvas.height,d=current.data,N=w*h;
-    history.push(current);
-    const seedI=(y*w+x)*4;
-    const seed=[d[seedI],d[seedI+1],d[seedI+2]];
-    const seen=new Uint8Array(N), mask=new Uint8Array(N);
-    const queue=new Int32Array(N);
-    let head=0,tail=0; queue[tail++]=y*w+x; let count=0;
-    while(head<tail){
-      const p=queue[head++]; if(seen[p])continue; seen[p]=1;
-      const cy=(p/w)|0,cx=p-cy*w,i=p*4;
-      const c=[d[i],d[i+1],d[i+2]];
-      if(dist(c,seed)>colorTol)continue;
-      if(gradientAt(d,w,h,cx,cy)>edgeLimit && Math.abs(cx-x)+Math.abs(cy-y)>5)continue;
-      mask[p]=1;count++;
-      if(cx>0)queue[tail++]=p-1;
-      if(cx<w-1)queue[tail++]=p+1;
-      if(cy>0)queue[tail++]=p-w;
-      if(cy<h-1)queue[tail++]=p+w;
-      if(tail>=N)break;
+    if(count<80){
+      history.pop();
+      toast('Prek një zonë më të pastër të murit');
+      isPainting=false;
+      return;
     }
     applyMask(current,mask,count);
+    isPainting=false;
   }
 
   function applyMask(image,mask,count){
