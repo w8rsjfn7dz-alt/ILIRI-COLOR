@@ -1,518 +1,1613 @@
 <!doctype html>
+
 <html lang="sq">
+
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#174c36">
-<title>ILIRI COLOR</title>
+
+<meta name="theme-color" content="#0d5b3d">
+
+<title>ILIRI COLOR AI</title>
+
 <style>
-:root{
-  --green:#174c36; --green2:#246a4d; --gold:#d8b04d;
-  --bg:#f4f4f1; --card:#fff; --text:#1f2723; --muted:#68736d;
-  --border:#d9dfdb;
-}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
-body{min-height:100vh}
-.app{max-width:900px;margin:0 auto;padding:env(safe-area-inset-top) 12px calc(20px + env(safe-area-inset-bottom))}
+
+body{
+
+  margin:0;
+
+  background:#f3f4f2;
+
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  color:#17201c
+
+}
+
+.app{max-width:900px;margin:auto;padding:10px 9px 25px}
+
 header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 4px 10px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  background:#0d5b3d;
+
+  color:#fff;
+
+  border-radius:18px;
+
+  padding:10px 12px;
+
+  margin-bottom:9px
+
 }
-.brand{display:flex;align-items:center;gap:10px}
+
+.brand{display:flex;align-items:center;gap:9px}
+
 .logo{
-  width:42px;height:42px;border-radius:12px;background:var(--green);
-  display:grid;place-items:center;color:var(--gold);font-weight:800;font-size:20px;
-  box-shadow:0 2px 8px #0002
+
+  width:46px;
+
+  height:46px;
+
+  border-radius:13px;
+
+  background:#08472f;
+
+  color:#e2bb50;
+
+  display:grid;
+
+  place-items:center;
+
+  font-weight:900;
+
+  font-size:21px
+
 }
-h1{font-size:21px;margin:0;letter-spacing:.4px}
-.sub{font-size:12px;color:var(--muted);margin-top:2px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:10px;box-shadow:0 2px 10px #0000000c}
+
+h1{font-size:20px;margin:0}
+
+.sub{font-size:11px;color:#dbe9e3;margin-top:2px}
+
+.top{
+
+  border:1px solid #ffffffa0;
+
+  background:transparent;
+
+  color:#fff;
+
+  border-radius:11px;
+
+  padding:9px 11px;
+
+  font-weight:800
+
+}
+
+.card{
+
+  background:#fff;
+
+  border:1px solid #d7ddd9;
+
+  border-radius:18px;
+
+  padding:9px
+
+}
+
 .stage{
-  position:relative;width:100%;min-height:390px;background:#e6e9e7;border-radius:14px;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
+
+  position:relative;
+
+  background:#e4e7e5;
+
+  border-radius:14px;
+
+  overflow:hidden;
+
+  min-height:410px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center
+
 }
-canvas{display:block;max-width:100%;width:100%;height:auto;touch-action:none}
-.empty{
-  text-align:center;padding:50px 20px;color:var(--muted)
+
+.empty{text-align:center;color:#68736d;padding:55px 20px}
+
+.cam{font-size:54px;margin-bottom:8px}
+
+canvas{display:block;width:100%;height:auto;touch-action:none}
+
+.overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  pointer-events:none;
+
+  width:100%;
+
+  height:100%
+
 }
-.empty .cam{font-size:54px}
-.empty button{margin-top:14px}
-input[type=file]{display:none}
-.controls{padding:13px 2px 2px}
-.controls-title{font-size:14px;font-weight:700;margin:0 0 9px 2px}
-.palette{
-  display:flex;gap:10px;overflow-x:auto;padding:3px 2px 10px;scrollbar-width:none
-}
-.palette::-webkit-scrollbar{display:none}
-.swatch{
-  flex:0 0 48px;height:48px;border-radius:50%;border:3px solid #fff;
-  box-shadow:0 0 0 1px #bcc5c0,0 2px 6px #0002;position:relative
-}
-.swatch.active:after{
-  content:"✓";position:absolute;inset:0;display:grid;place-items:center;
-  font-size:22px;font-weight:900;color:#fff;text-shadow:0 1px 3px #000
-}
-.colorline{display:flex;gap:9px;align-items:center;margin-top:3px}
-.colorline label{font-size:13px;color:var(--muted)}
-.colorline input[type=color]{
-  width:45px;height:34px;border:0;padding:0;background:transparent
-}
-.actions{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px
-}
-button{
-  border:0;border-radius:12px;padding:13px 10px;font-size:15px;font-weight:700;
-  background:var(--green);color:white
-}
-button.secondary{background:#ecefeb;color:#24302a;border:1px solid var(--border)}
-button.danger{background:#a63b3b}
-button:disabled{opacity:.45}
-.hint{
-  margin:10px 4px 2px;font-size:13px;line-height:1.35;color:var(--muted)
-}
+
 .status{
-  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
-  background:#111c;color:white;border-radius:999px;padding:8px 12px;font-size:12px;
-  opacity:0;pointer-events:none;transition:.2s;white-space:nowrap
+
+  position:absolute;
+
+  left:50%;
+
+  bottom:12px;
+
+  transform:translateX(-50%);
+
+  background:#102018e8;
+
+  color:#fff;
+
+  padding:8px 12px;
+
+  border-radius:999px;
+
+  font-size:12px;
+
+  white-space:nowrap;
+
+  display:none;
+
+  z-index:4
+
 }
-.status.show{opacity:1}
-.compareBadge{
-  position:absolute;top:12px;right:12px;background:#111c;color:#fff;
-  border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;display:none
+
+.status.show{display:block}
+
+.ai{
+
+  position:absolute;
+
+  left:10px;
+
+  top:10px;
+
+  background:#0d5b3de8;
+
+  color:#fff;
+
+  padding:7px 9px;
+
+  border-radius:999px;
+
+  font-size:11px;
+
+  font-weight:800;
+
+  z-index:4
+
 }
-.compareBadge.show{display:block}
-@media(min-width:700px){
-  .stage{min-height:540px}
-  .actions{grid-template-columns:repeat(4,1fr)}
+
+.controls{padding:13px 1px 2px}
+
+.title{font-weight:900;margin:0 0 9px 2px}
+
+.palette{
+
+  display:flex;
+
+  gap:9px;
+
+  overflow-x:auto;
+
+  padding:3px 3px 11px
+
 }
+
+.sw{
+
+  flex:0 0 49px;
+
+  height:49px;
+
+  border-radius:50%;
+
+  border:4px solid #fff;
+
+  box-shadow:0 0 0 1px #bcc5c0;
+
+  position:relative
+
+}
+
+.sw.on{box-shadow:0 0 0 3px #0d5b3d}
+
+.sw.on:after{
+
+  content:"✓";
+
+  position:absolute;
+
+  inset:0;
+
+  display:grid;
+
+  place-items:center;
+
+  font-size:24px;
+
+  font-weight:900;
+
+  color:#0d5b3d;
+
+  text-shadow:0 1px #fff
+
+}
+
+.actions{
+
+  display:grid;
+
+  grid-template-columns:repeat(5,1fr);
+
+  gap:5px;
+
+  margin-top:10px
+
+}
+
+button{
+
+  border:0;
+
+  border-radius:12px;
+
+  padding:11px 4px;
+
+  background:#0d5b3d;
+
+  color:#fff;
+
+  font-weight:800;
+
+  font-size:11px
+
+}
+
+.secondary{
+
+  background:#f6f7f6;
+
+  color:#1d2822;
+
+  border:1px solid #d7ddd9
+
+}
+
+.danger{
+
+  background:#f6f7f6;
+
+  color:#812d2d;
+
+  border:1px solid #e0cccc
+
+}
+
+.ico{display:block;font-size:19px;margin-bottom:4px}
+
+.hint{
+
+  font-size:12px;
+
+  color:#68736d;
+
+  line-height:1.4;
+
+  margin:10px 3px 2px
+
+}
+
+.loading{
+
+  position:absolute;
+
+  inset:0;
+
+  background:#ffffffdc;
+
+  z-index:8;
+
+  display:none;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-align:center;
+
+  padding:30px
+
+}
+
+.loading.show{display:flex}
+
+.spin{
+
+  width:34px;
+
+  height:34px;
+
+  border:4px solid #d7ddd9;
+
+  border-top-color:#0d5b3d;
+
+  border-radius:50%;
+
+  animation:s 1s linear infinite;
+
+  margin:0 auto 12px
+
+}
+
+@keyframes s{to{transform:rotate(360deg)}}
+
+input{display:none}
+
+@media(max-width:420px){
+
+  .actions button{font-size:10px;padding:10px 2px}
+
+  .sub{max-width:170px}
+
+  .stage{min-height:360px}
+
+}
+
 </style>
+
 </head>
+
 <body>
+
 <div class="app">
-  <header>
-    <div class="brand">
-      <div class="logo">IC</div>
-      <div>
-        <h1>ILIRI COLOR</h1>
-        <div class="sub">Provo ngjyrat direkt mbi dhomë</div>
-      </div>
-    </div>
-    <button class="secondary" id="newPhotoBtn" style="padding:10px 12px">Foto</button>
-  </header>
 
-  <div class="card">
-    <div class="stage" id="stage">
-      <div class="empty" id="emptyState">
-        <div class="cam">📷</div>
-        <div>Vendos një foto të dhomës</div>
-        <button id="openPhotoBtn">Zgjidh foton</button>
-      </div>
-      <canvas id="canvas" hidden></canvas>
-      <div class="compareBadge" id="compareBadge">PARA</div>
-      <div class="status" id="status"></div>
+<header>
+
+  <div class="brand">
+
+    <div class="logo">IC</div>
+
+    <div>
+
+      <h1>ILIRI COLOR AI</h1>
+
+      <div class="sub">Prek një faqe — AI zgjedh vetëm atë</div>
+
     </div>
 
-    <div class="controls" id="controls" hidden>
-      <div class="controls-title">Zgjidh ngjyrën</div>
-      <div class="palette" id="palette"></div>
-
-      <div class="colorline">
-        <label for="customColor">Ngjyrë tjetër:</label>
-        <input id="customColor" type="color" value="#d7d1c5">
-      </div>
-
-      <div class="actions">
-        <button class="secondary" id="undoBtn">↶ Kthim pas</button>
-        <button class="secondary" id="compareBtn">◐ Krahaso</button>
-        <button id="saveBtn">⬇ Ruaj foton</button>
-        <button class="danger" id="deleteBtn">🗑 Fshi</button>
-      </div>
-
-      <div class="hint">
-        Zgjidh një ngjyrë dhe pastaj prek faqen e murit që do të lyesh.
-        Aplikacioni ndalon te qoshet dhe kufijtë e sipërfaqes së prekur dhe ruan dritë-hijet e fotos.
-      </div>
-    </div>
   </div>
 
-  <input id="photoInput" type="file" accept="image/*">
+  <button class="top" id="photoTop">Foto</button>
+
+</header>
+
+<div class="card">
+
+<div class="stage" id="stage">
+
+<div class="empty" id="empty">
+
+  <div class="cam">📷</div>
+
+  <div>Vendos një foto të dhomës</div>
+
+  <button id="choose" style="margin-top:14px;padding:12px 18px">
+
+    Zgjidh foton
+
+  </button>
+
 </div>
 
-<script>
-(() => {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d', {willReadFrequently:true});
-  const input = document.getElementById('photoInput');
-  const empty = document.getElementById('emptyState');
-  const controls = document.getElementById('controls');
-  const stage = document.getElementById('stage');
-  const palette = document.getElementById('palette');
-  const custom = document.getElementById('customColor');
-  const statusEl = document.getElementById('status');
-  const badge = document.getElementById('compareBadge');
+<canvas id="c" hidden></canvas>
 
-  const colors = [
-    '#f2efe6','#e3ddd0','#d5cfc1','#c9b9a7','#b8a99a',
-    '#d7e0d2','#b9c9b6','#95aa91','#8fa7ae','#becbd0',
-    '#d6c4c7','#c5a7ab','#d9c696','#c9a86a','#af9075',
-    '#b9b7b0','#8e928e','#686d6a','#454b49','#252b29'
-  ];
-  let selected = colors[0];
-  let original = null;
-  let history = [];
-  let comparing = false;
-  let isPainting = false;
+<canvas id="o" class="overlay" hidden></canvas>
 
-  function toast(t){
-    statusEl.textContent=t;
-    statusEl.classList.add('show');
-    clearTimeout(toast.t);
-    toast.t=setTimeout(()=>statusEl.classList.remove('show'),1600);
+<div class="ai" id="ai" hidden>AI SlimSAM</div>
+
+<div class="status" id="status"></div>
+
+<div class="loading" id="loading">
+
+  <div>
+
+    <div class="spin"></div>
+
+    <b id="loadTitle">Po ngarkohet AI…</b>
+
+    <div id="loadText" style="font-size:12px;color:#68736d;margin-top:6px">
+
+      Herën e parë mund të zgjasë pak.
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<div class="controls" id="controls" hidden>
+
+<div class="title">Zgjidh ngjyrën</div>
+
+<div class="palette" id="palette"></div>
+
+<div class="actions">
+
+<button class="secondary" id="undo">
+
+<span class="ico">↶</span>
+
+Kthim pas
+
+</button>
+
+<button class="secondary" id="paint">
+
+<span class="ico">▰</span>
+
+Lyej
+
+</button>
+
+<button class="secondary" id="compare">
+
+<span class="ico">◫</span>
+
+Krahaso
+
+</button>
+
+<button class="danger" id="clear">
+
+<span class="ico">⌫</span>
+
+Fshije
+
+</button>
+
+<button id="save">
+
+<span class="ico">▣</span>
+
+Ruaj foton
+
+</button>
+
+</div>
+
+<div class="hint">
+
+Zgjidh ngjyrën → prek faqen e murit → AI shënon vetëm sipërfaqen e zgjedhur → shtyp <b>Lyej</b>.
+
+Modeli AI shkarkohet në telefon herën e parë.
+
+</div>
+
+</div>
+
+</div>
+
+<input id="file" type="file" accept="image/*">
+
+</div>
+
+<script type="module">
+
+import {
+
+  env,
+
+  SamModel,
+
+  AutoProcessor,
+
+  RawImage,
+
+  Tensor
+
+} from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.14.0';
+
+env.allowLocalModels=false;
+
+const MODEL='Xenova/slimsam-77-uniform';
+
+const c=document.getElementById('c');
+
+const ctx=c.getContext('2d',{willReadFrequently:true});
+
+const o=document.getElementById('o');
+
+const ox=o.getContext('2d');
+
+const file=document.getElementById('file');
+
+const empty=document.getElementById('empty');
+
+const controls=document.getElementById('controls');
+
+const stage=document.getElementById('stage');
+
+const loading=document.getElementById('loading');
+
+const loadTitle=document.getElementById('loadTitle');
+
+const status=document.getElementById('status');
+
+const ai=document.getElementById('ai');
+
+const colors=[
+
+'#f2efe6',
+
+'#e3ddd0',
+
+'#d5cfc1',
+
+'#c9b9a7',
+
+'#b8a99a',
+
+'#d7e0d2',
+
+'#b9c9b6',
+
+'#95aa91',
+
+'#8fa7ae',
+
+'#becbd0',
+
+'#d6c4c7',
+
+'#c5a7ab',
+
+'#d9c696',
+
+'#c9a86a',
+
+'#af9075',
+
+'#8e928e',
+
+'#686d6a',
+
+'#454b49'
+
+];
+
+let color=colors[0];
+
+let original=null;
+
+let history=[];
+
+let model=null;
+
+let processor=null;
+
+let imageInputs=null;
+
+let embeddings=null;
+
+let mask=null;
+
+let busy=false;
+
+let compareData=null;
+
+function toast(t){
+
+  status.textContent=t;
+
+  status.classList.add('show');
+
+  clearTimeout(toast.t);
+
+  toast.t=setTimeout(()=>{
+
+    status.classList.remove('show');
+
+  },1800);
+
+}
+
+colors.forEach((x,i)=>{
+
+  const b=document.createElement('button');
+
+  b.className='sw'+(i===0?' on':'');
+
+  b.style.background=x;
+
+  b.onclick=()=>{
+
+    color=x;
+
+    document
+
+      .querySelectorAll('.sw')
+
+      .forEach(z=>z.classList.remove('on'));
+
+    b.classList.add('on');
+
+  };
+
+  document.getElementById('palette').appendChild(b);
+
+});
+
+document.getElementById('choose').onclick=()=>file.click();
+
+document.getElementById('photoTop').onclick=()=>file.click();
+
+async function getAI(){
+
+  if(model && processor) return;
+
+  loading.classList.add('show');
+
+  loadTitle.textContent='Po ngarkohet AI…';
+
+  try{
+
+    [model,processor]=await Promise.all([
+
+      SamModel.from_pretrained(
+
+        MODEL,
+
+        {quantized:true}
+
+      ),
+
+      AutoProcessor.from_pretrained(
+
+        MODEL
+
+      )
+
+    ]);
+
+  }catch(e){
+
+    console.error(e);
+
+    throw e;
+
+  }finally{
+
+    loading.classList.remove('show');
+
   }
 
-  colors.forEach((c,i)=>{
-    const b=document.createElement('button');
-    b.className='swatch'+(i===0?' active':'');
-    b.style.background=c;
-    b.title=c;
-    b.dataset.color=c;
-    b.addEventListener('click',()=>{
-      selected=c;
-      custom.value=c;
-      [...palette.children].forEach(x=>x.classList.toggle('active',x===b));
-    });
-    palette.appendChild(b);
-  });
+}
 
-  custom.addEventListener('input',()=>{
-    selected=custom.value;
-    [...palette.children].forEach(x=>x.classList.remove('active'));
-  });
+file.onchange=async()=>{
 
-  document.getElementById('openPhotoBtn').onclick=()=>input.click();
-  document.getElementById('newPhotoBtn').onclick=()=>input.click();
+  const f=file.files?.[0];
 
-  input.addEventListener('change', e=>{
-    const f=e.target.files && e.target.files[0];
-    if(!f) return;
-    const r=new FileReader();
-    r.onload=()=>{
-      const img=new Image();
-      img.onload=()=>{
-        // Keep image reasonably sized for iPhone memory.
-        const max=1600;
-        let w=img.naturalWidth,h=img.naturalHeight;
-        const s=Math.min(1,max/Math.max(w,h));
-        w=Math.round(w*s); h=Math.round(h*s);
-        canvas.width=w; canvas.height=h;
-        ctx.drawImage(img,0,0,w,h);
-        original=ctx.getImageData(0,0,w,h);
-        history=[];
-        canvas.hidden=false; empty.hidden=true; controls.hidden=false;
-        fitStage();
-        toast('Fotoja u ngarkua');
-      };
-      img.src=r.result;
-    };
-    r.readAsDataURL(f);
-    input.value='';
-  });
+  if(!f) return;
 
-  function fitStage(){
-    if(!canvas.width) return;
-    const ratio=canvas.height/canvas.width;
-    canvas.style.width='100%';
-    canvas.style.height='auto';
+  const url=URL.createObjectURL(f);
+
+  const img=new Image();
+
+  img.onload=async()=>{
+
+    let w=img.naturalWidth;
+
+    let h=img.naturalHeight;
+
+    const s=Math.min(
+
+      1,
+
+      1400/Math.max(w,h)
+
+    );
+
+    w=Math.round(w*s);
+
+    h=Math.round(h*s);
+
+    c.width=w;
+
+    c.height=h;
+
+    o.width=w;
+
+    o.height=h;
+
+    ctx.drawImage(
+
+      img,
+
+      0,
+
+      0,
+
+      w,
+
+      h
+
+    );
+
+    original=ctx.getImageData(
+
+      0,
+
+      0,
+
+      w,
+
+      h
+
+    );
+
+    history=[];
+
+    mask=null;
+
+    c.hidden=false;
+
+    o.hidden=false;
+
+    empty.hidden=true;
+
+    controls.hidden=false;
+
+    ai.hidden=false;
+
     stage.style.minHeight='0';
-    stage.style.aspectRatio = canvas.width + ' / ' + canvas.height;
-  }
 
-  function hexRgb(hex){
-    const n=parseInt(hex.slice(1),16);
-    return [(n>>16)&255,(n>>8)&255,n&255];
-  }
-  const lum=(r,g,b)=>0.2126*r+0.7152*g+0.0722*b;
-  const dist=(a,b)=>{
-    // perceptual-ish RGB distance, emphasizing luminance less than chroma.
-    const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2];
-    return Math.sqrt(0.30*dr*dr+0.59*dg*dg+0.11*db*db);
+    stage.style.aspectRatio=`${w}/${h}`;
+
+    URL.revokeObjectURL(url);
+
+    try{
+
+      await getAI();
+
+      loading.classList.add('show');
+
+      loadTitle.textContent='AI po analizon foton…';
+
+      const dataURL=c.toDataURL(
+
+        'image/jpeg',
+
+        .92
+
+      );
+
+      const raw=await RawImage.read(dataURL);
+
+      imageInputs=await processor(raw);
+
+      embeddings=
+
+        await model.get_image_embeddings(
+
+          imageInputs
+
+        );
+
+      toast(
+
+        'AI gati — prek një faqe muri'
+
+      );
+
+    }catch(e){
+
+      toast(
+
+        'AI nuk u ngarkua — kontrollo internetin'
+
+      );
+
+      console.error(e);
+
+    }finally{
+
+      loading.classList.remove('show');
+
+    }
+
   };
 
-  function sampleStats(data,w,h,x,y){
-    const vals=[];
-    const rad=3;
-    for(let yy=Math.max(0,y-rad); yy<=Math.min(h-1,y+rad); yy++){
-      for(let xx=Math.max(0,x-rad); xx<=Math.min(w-1,x+rad); xx++){
-        const i=(yy*w+xx)*4;
-        vals.push([data[i],data[i+1],data[i+2]]);
+  img.src=url;
+
+  file.value='';
+
+};
+
+function xy(ev){
+
+  const r=c.getBoundingClientRect();
+
+  return[
+
+    (ev.clientX-r.left)*c.width/r.width,
+
+    (ev.clientY-r.top)*c.height/r.height
+
+  ];
+
+}
+
+c.addEventListener(
+
+'pointerup',
+
+async ev=>{
+
+  if(!embeddings || busy) return;
+
+  busy=true;
+
+  const [x,y]=xy(ev);
+
+  loading.classList.add('show');
+
+  loadTitle.textContent=
+
+    'AI po zgjedh faqen…';
+
+  try{
+
+    const resh=
+
+      imageInputs.reshaped_input_sizes[0];
+
+    const px=
+
+      x/c.width*resh[1];
+
+    const py=
+
+      y/c.height*resh[0];
+
+    const points=
+
+      new Tensor(
+
+        'float32',
+
+        [px,py],
+
+        [1,1,1,2]
+
+      );
+
+    const labels=
+
+      new Tensor(
+
+        'int64',
+
+        [1n],
+
+        [1,1,1]
+
+      );
+
+    const out=
+
+      await model({
+
+        ...embeddings,
+
+        input_points:points,
+
+        input_labels:labels
+
+      });
+
+    const masks=
+
+      await processor.post_process_masks(
+
+        out.pred_masks,
+
+        imageInputs.original_sizes,
+
+        imageInputs.reshaped_input_sizes
+
+      );
+
+    const t=masks[0];
+
+    const H=
+
+      t.dims[t.dims.length-2];
+
+    const W=
+
+      t.dims[t.dims.length-1];
+
+    const K=
+
+      t.dims[t.dims.length-3] || 1;
+
+    let best=0;
+
+    let bestScore=-Infinity;
+
+    for(
+
+      let k=0;
+
+      k<Math.min(
+
+        K,
+
+        out.iou_scores.data.length
+
+      );
+
+      k++
+
+    ){
+
+      if(
+
+        out.iou_scores.data[k]
+
+        >
+
+        bestScore
+
+      ){
+
+        bestScore=
+
+          out.iou_scores.data[k];
+
+        best=k;
+
       }
+
     }
-    const avg=[0,0,0];
-    vals.forEach(v=>{avg[0]+=v[0];avg[1]+=v[1];avg[2]+=v[2]});
-    avg[0]/=vals.length;avg[1]/=vals.length;avg[2]/=vals.length;
-    let variance=0;
-    vals.forEach(v=>variance+=dist(v,avg)**2);
-    variance/=vals.length;
-    return {avg, std:Math.sqrt(variance)};
+
+    const plane=H*W;
+
+    mask=
+
+      new Uint8Array(
+
+        c.width*c.height
+
+      );
+
+    for(
+
+      let yy=0;
+
+      yy<c.height;
+
+      yy++
+
+    ){
+
+      const sy=
+
+        Math.min(
+
+          H-1,
+
+          Math.floor(
+
+            yy*H/c.height
+
+          )
+
+        );
+
+      for(
+
+        let xx=0;
+
+        xx<c.width;
+
+        xx++
+
+      ){
+
+        const sx=
+
+          Math.min(
+
+            W-1,
+
+            Math.floor(
+
+              xx*W/c.width
+
+            )
+
+          );
+
+        mask[
+
+          yy*c.width+xx
+
+        ]=
+
+          t.data[
+
+            best*plane+
+
+            sy*W+
+
+            sx
+
+          ]
+
+          ?1:0;
+
+      }
+
+    }
+
+    drawMask();
+
+    toast(
+
+      'Faqja u zgjodh — shtyp Lyej'
+
+    );
+
+  }catch(e){
+
+    console.error(e);
+
+    toast(
+
+      'Provo ta prekësh përsëri murin'
+
+    );
+
+  }finally{
+
+    busy=false;
+
+    loading.classList.remove('show');
+
   }
 
-  function gradientAt(data,w,h,x,y){
-    const xm=Math.max(0,x-1), xp=Math.min(w-1,x+1);
-    const ym=Math.max(0,y-1), yp=Math.min(h-1,y+1);
-    const i1=(y*w+xm)*4, i2=(y*w+xp)*4;
-    const i3=(ym*w+x)*4, i4=(yp*w+x)*4;
-    const gx=Math.abs(lum(data[i2],data[i2+1],data[i2+2])-lum(data[i1],data[i1+1],data[i1+2]));
-    const gy=Math.abs(lum(data[i4],data[i4+1],data[i4+2])-lum(data[i3],data[i3+1],data[i3+2]));
-    return gx+gy;
-  }
+});
 
-  function paintRegion(x,y){
-    if(!original || isPainting || comparing) return;
-    isPainting=true;
-    const current=ctx.getImageData(0,0,canvas.width,canvas.height);
-    history.push(current);
-    if(history.length>12) history.shift();
+function drawMask(){
 
-    const W=canvas.width,H=canvas.height,N=W*H;
-    const maxSide=620;
-    const scale=Math.min(1,maxSide/Math.max(W,H));
-    const w=Math.max(1,Math.round(W*scale)), h=Math.max(1,Math.round(H*scale));
-    const pc=document.createElement('canvas');
-    pc.width=w; pc.height=h;
-    const pctx=pc.getContext('2d',{willReadFrequently:true});
-    pctx.imageSmoothingEnabled=true;
-    pctx.imageSmoothingQuality='high';
-    pctx.drawImage(canvas,0,0,w,h);
-    const proxy=pctx.getImageData(0,0,w,h), d=proxy.data, PN=w*h;
-    const sx=Math.max(0,Math.min(w-1,Math.round(x*scale)));
-    const sy=Math.max(0,Math.min(h-1,Math.round(y*scale)));
-    const start=sy*w+sx;
+  ox.clearRect(
 
-    // Luminance + chroma representation. Chroma changes little with light/shadow,
-    // so the same wall can be followed even when one side is darker.
-    const gray=new Float32Array(PN), cr=new Float32Array(PN), cb=new Float32Array(PN);
-    for(let p=0;p<PN;p++){
-      const i=p*4, r=d[i], g=d[i+1], b=d[i+2];
-      const L=lum(r,g,b);
-      gray[p]=L;
-      const sum=r+g+b+1;
-      cr[p]=r/sum; cb[p]=b/sum;
-    }
+    0,
 
-    // Multi-scale architectural edge map. Corners and ceiling lines are usually
-    // long continuous edges, while wall texture is short and fragmented.
-    const edge=new Float32Array(PN);
-    for(let yy=3;yy<h-3;yy++){
-      for(let xx=3;xx<w-3;xx++){
-        const p=yy*w+xx;
-        const gx1=Math.abs(gray[p+1]-gray[p-1]);
-        const gy1=Math.abs(gray[p+w]-gray[p-w]);
-        const gx3=Math.abs(gray[p+3]-gray[p-3])*.55;
-        const gy3=Math.abs(gray[p+3*w]-gray[p-3*w])*.55;
-        edge[p]=Math.max(gx1+gy1,gx3+gy3);
-      }
-    }
+    0,
 
-    // Low threshold first, then keep only long connected edge chains.
-    const lowEdge=14, strongEdge=38;
-    const candidate=new Uint8Array(PN), visited=new Uint8Array(PN), barrier=new Uint8Array(PN);
-    for(let p=0;p<PN;p++) if(edge[p]>=lowEdge) candidate[p]=1;
-    const q=new Int32Array(PN);
-    const minChain=Math.max(12,Math.round(Math.min(w,h)*0.035));
-    for(let p0=0;p0<PN;p0++){
-      if(!candidate[p0]||visited[p0]) continue;
-      let head=0,tail=0; q[tail++]=p0; visited[p0]=1;
-      const comp=[];
-      let minx=w,maxx=0,miny=h,maxy=0,strong=false;
-      while(head<tail){
-        const p=q[head++]; comp.push(p);
-        const yy=(p/w)|0, xx=p-yy*w;
-        minx=Math.min(minx,xx); maxx=Math.max(maxx,xx); miny=Math.min(miny,yy); maxy=Math.max(maxy,yy);
-        if(edge[p]>=strongEdge) strong=true;
-        for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
-          if(!dx&&!dy) continue;
-          const nx=xx+dx, ny=yy+dy;
-          if(nx<0||ny<0||nx>=w||ny>=h) continue;
-          const np=ny*w+nx;
-          if(candidate[np]&&!visited[np]){visited[np]=1;q[tail++]=np;}
-        }
-      }
-      const span=Math.max(maxx-minx,maxy-miny);
-      if(strong || comp.length>=minChain || span>=minChain){
-        for(const p of comp) barrier[p]=1;
-      }
-    }
+    o.width,
 
-    // Thicken structural edges, but open a small disk around the touched point so
-    // the user can tap close to a corner without the seed being trapped.
-    const thick=barrier.slice();
-    for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
-      const p=yy*w+xx;
-      if(!barrier[p]) continue;
-      for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
-        const nx=xx+dx, ny=yy+dy;
-        if(nx>=0&&ny>=0&&nx<w&&ny<h) thick[ny*w+nx]=1;
-      }
-    }
-    for(let yy=Math.max(0,sy-4);yy<=Math.min(h-1,sy+4);yy++)
-      for(let xx=Math.max(0,sx-4);xx<=Math.min(w-1,sx+4);xx++) thick[yy*w+xx]=0;
+    o.height
 
-    // Seed model from a clean core around the tap.
-    let sr=0,sg=0,sb=0,sl=0,nseed=0;
-    for(let yy=Math.max(0,sy-5);yy<=Math.min(h-1,sy+5);yy++){
-      for(let xx=Math.max(0,sx-5);xx<=Math.min(w-1,sx+5);xx++){
-        const p=yy*w+xx, i=p*4;
-        if(thick[p]) continue;
-        sr+=cr[p]; sb+=cb[p]; sl+=gray[p]; sg+=(d[i+1]/(d[i]+d[i+1]+d[i+2]+1)); nseed++;
-      }
-    }
-    if(!nseed) nseed=1;
-    sr/=nseed; sg/=nseed; sb/=nseed; sl/=nseed;
+  );
 
-    const pmask=new Uint8Array(PN), seen=new Uint8Array(PN), queue=new Int32Array(PN);
-    let head=0,tail=0,count=0;
-    queue[tail++]=start;
-    const chromaTol=.105; // tolerant to shadows, strict across different paint/materials
-    const lightTol=92;
-    while(head<tail){
-      const p=queue[head++];
-      if(seen[p]) continue;
-      seen[p]=1;
-      if(p!==start && thick[p]) continue;
-      const yy=(p/w)|0, xx=p-yy*w;
-      const i=p*4;
-      const sum=d[i]+d[i+1]+d[i+2]+1;
-      const rr=d[i]/sum, gg=d[i+1]/sum, bb=d[i+2]/sum;
-      const cd=Math.sqrt((rr-sr)*(rr-sr)+(gg-sg)*(gg-sg)+(bb-sb)*(bb-sb));
-      if(cd>chromaTol) continue;
-      if(Math.abs(gray[p]-sl)>lightTol && edge[p]>8) continue;
-      pmask[p]=1; count++;
-      if(xx>0&&!seen[p-1]) queue[tail++]=p-1;
-      if(xx<w-1&&!seen[p+1]) queue[tail++]=p+1;
-      if(yy>0&&!seen[p-w]) queue[tail++]=p-w;
-      if(yy<h-1&&!seen[p+w]) queue[tail++]=p+w;
-      if(tail>=PN) break;
-    }
+  if(!mask) return;
 
-    // Fill small holes only when enclosed by the selected face.
-    for(let pass=0;pass<3;pass++){
-      const add=[];
-      for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
-        const p=yy*w+xx;
-        if(pmask[p]||thick[p]) continue;
-        let n=0;
-        if(pmask[p-1])n++; if(pmask[p+1])n++; if(pmask[p-w])n++; if(pmask[p+w])n++;
-        if(n>=3) add.push(p);
-      }
-      for(const p of add) pmask[p]=1;
-    }
+  const im=
 
-    let pcount=0; for(let p=0;p<PN;p++) if(pmask[p]) pcount++;
-    if(pcount>PN*.50){
-      history.pop(); toast('Prek më në qendër të faqes së murit'); isPainting=false; return;
-    }
-    if(pcount<Math.max(40,PN*.002)){
-      history.pop(); toast('Prek një pjesë më të pastër të murit'); isPainting=false; return;
-    }
+    ox.createImageData(
 
-    // Upscale without smoothing so the mask follows detected boundaries exactly.
-    const mask=new Uint8Array(N); let fullCount=0;
-    for(let yy=0;yy<H;yy++){
-      const py=Math.min(h-1,Math.floor(yy*scale));
-      for(let xx=0;xx<W;xx++){
-        const px=Math.min(w-1,Math.floor(xx*scale));
-        if(pmask[py*w+px]){mask[yy*W+xx]=1;fullCount++;}
-      }
-    }
-    applyMask(current,mask,fullCount);
-    isPainting=false;
-  }
+      o.width,
 
-  function applyMask(image,mask,count){
-    const w=canvas.width,h=canvas.height,d=image.data;
-    const [tr,tg,tb]=hexRgb(selected);
+      o.height
 
-    // Soften mask 1 px at borders by checking neighbours.
-    for(let p=0;p<mask.length;p++){
+    );
+
+  const d=im.data;
+
+  const W=o.width;
+
+  const H=o.height;
+
+  for(
+
+    let y=1;
+
+    y<H-1;
+
+    y++
+
+  ){
+
+    for(
+
+      let x=1;
+
+      x<W-1;
+
+      x++
+
+    ){
+
+      const p=y*W+x;
+
       if(!mask[p]) continue;
-      const y=(p/w)|0,x=p-y*w,i=p*4;
-      const L=lum(d[i],d[i+1],d[i+2])/255;
-      // Preserve light/shadow and some original character.
-      const shade=0.50+L*0.62;
-      const nr=Math.min(255,tr*shade), ng=Math.min(255,tg*shade), nb=Math.min(255,tb*shade);
-      let alpha=.76;
-      let neighbours=0;
-      if(x>0&&mask[p-1])neighbours++;
-      if(x<w-1&&mask[p+1])neighbours++;
-      if(y>0&&mask[p-w])neighbours++;
-      if(y<h-1&&mask[p+w])neighbours++;
-      if(neighbours<3) alpha=.48;
-      d[i]=d[i]*(1-alpha)+nr*alpha;
-      d[i+1]=d[i+1]*(1-alpha)+ng*alpha;
-      d[i+2]=d[i+2]*(1-alpha)+nb*alpha;
+
+      const edge=
+
+        !mask[p-1] ||
+
+        !mask[p+1] ||
+
+        !mask[p-W] ||
+
+        !mask[p+W];
+
+      const i=p*4;
+
+      if(edge){
+
+        d[i]=255;
+
+        d[i+1]=112;
+
+        d[i+2]=15;
+
+        d[i+3]=255;
+
+      }else if(
+
+        (x+y)%5===0
+
+      ){
+
+        d[i]=255;
+
+        d[i+1]=112;
+
+        d[i+2]=15;
+
+        d[i+3]=45;
+
+      }
+
     }
-    ctx.putImageData(image,0,0);
-    if(count<80) toast('Prek pak më në qendër të faqes');
-    else toast('Faqja u ngjyros');
+
   }
 
-  function pointFromEvent(e){
-    const r=canvas.getBoundingClientRect();
-    const t=e.touches?e.touches[0]:e;
-    const x=Math.max(0,Math.min(canvas.width-1,Math.floor((t.clientX-r.left)*canvas.width/r.width)));
-    const y=Math.max(0,Math.min(canvas.height-1,Math.floor((t.clientY-r.top)*canvas.height/r.height)));
-    return {x,y};
+  ox.putImageData(
+
+    im,
+
+    0,
+
+    0
+
+  );
+
+}
+
+function rgb(h){
+
+  const n=
+
+    parseInt(
+
+      h.slice(1),
+
+      16
+
+    );
+
+  return[
+
+    (n>>16)&255,
+
+    (n>>8)&255,
+
+    n&255
+
+  ];
+
+}
+
+document
+
+.getElementById('paint')
+
+.onclick=()=>{
+
+  if(!mask){
+
+    toast(
+
+      'Prek më parë faqen e murit'
+
+    );
+
+    return;
+
   }
-  canvas.addEventListener('click', e=>{
-    const p=pointFromEvent(e);
-    paintRegion(p.x,p.y);
-  });
 
-  document.getElementById('undoBtn').onclick=()=>{
-    if(!history.length){toast('Nuk ka veprim për t’u kthyer');return}
-    ctx.putImageData(history.pop(),0,0);
-  };
+  const cur=
 
-  const showOriginal=()=>{
-    if(!original||comparing)return;
-    comparing=true;
-    window.__painted=ctx.getImageData(0,0,canvas.width,canvas.height);
-    ctx.putImageData(original,0,0);
-    badge.classList.add('show');
-  };
-  const showPainted=()=>{
-    if(!comparing)return;
-    comparing=false;
-    if(window.__painted)ctx.putImageData(window.__painted,0,0);
-    badge.classList.remove('show');
-  };
-  const cb=document.getElementById('compareBtn');
-  cb.addEventListener('pointerdown',showOriginal);
-  cb.addEventListener('pointerup',showPainted);
-  cb.addEventListener('pointercancel',showPainted);
-  cb.addEventListener('pointerleave',showPainted);
+    ctx.getImageData(
 
-  document.getElementById('saveBtn').onclick=()=>{
-    if(!canvas.width)return;
-    const a=document.createElement('a');
-    a.download='ILIRI-COLOR-'+new Date().toISOString().slice(0,10)+'.jpg';
-    a.href=canvas.toDataURL('image/jpeg',.94);
-    document.body.appendChild(a);a.click();a.remove();
-    toast('Fotoja u ruajt');
-  };
+      0,
 
-  document.getElementById('deleteBtn').onclick=()=>{
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    canvas.width=0;canvas.height=0;
-    original=null;history=[];window.__painted=null;
-    canvas.hidden=true;controls.hidden=true;empty.hidden=false;
-    stage.style.aspectRatio='';stage.style.minHeight='';
-    toast('Fotoja u fshi');
-  };
-})();
+      0,
+
+      c.width,
+
+      c.height
+
+    );
+
+  history.push(cur);
+
+  if(history.length>12)
+
+    history.shift();
+
+  const d=cur.data;
+
+  const [R,G,B]=rgb(color);
+
+  for(
+
+    let p=0;
+
+    p<mask.length;
+
+    p++
+
+  ){
+
+    if(!mask[p])
+
+      continue;
+
+    const i=p*4;
+
+    const l=
+
+      .2126*d[i]
+
+      +
+
+      .7152*d[i+1]
+
+      +
+
+      .0722*d[i+2];
+
+    const target=
+
+      .2126*R
+
+      +
+
+      .7152*G
+
+      +
+
+      .0722*B;
+
+    const k=
+
+      Math.max(
+
+        .45,
+
+        Math.min(
+
+          1.55,
+
+          l/(target||1)
+
+        )
+
+      );
+
+    const a=.78;
+
+    d[i]=
+
+      d[i]*(1-a)
+
+      +
+
+      Math.min(
+
+        255,
+
+        R*k
+
+      )*a;
+
+    d[i+1]=
+
+      d[i+1]*(1-a)
+
+      +
+
+      Math.min(
+
+        255,
+
+        G*k
+
+      )*a;
+
+    d[i+2]=
+
+      d[i+2]*(1-a)
+
+      +
+
+      Math.min(
+
+        255,
+
+        B*k
+
+      )*a;
+
+  }
+
+  ctx.putImageData(
+
+    cur,
+
+    0,
+
+    0
+
+  );
+
+  mask=null;
+
+  ox.clearRect(
+
+    0,
+
+    0,
+
+    o.width,
+
+    o.height
+
+  );
+
+  toast('Faqja u lye');
+
+};
+
+document
+
+.getElementById('undo')
+
+.onclick=()=>{
+
+  mask=null;
+
+  ox.clearRect(
+
+    0,
+
+    0,
+
+    o.width,
+
+    o.height
+
+  );
+
+  if(history.length){
+
+    ctx.putImageData(
+
+      history.pop(),
+
+      0,
+
+      0
+
+    );
+
+  }else{
+
+    toast(
+
+      'Nuk ka ndryshim për kthim'
+
+    );
+
+  }
+
+};
+
+document
+
+.getElementById('clear')
+
+.onclick=()=>{
+
+  mask=null;
+
+  ox.clearRect(
+
+    0,
+
+    0,
+
+    o.width,
+
+    o.height
+
+  );
+
+  if(original){
+
+    ctx.putImageData(
+
+      original,
+
+      0,
+
+      0
+
+    );
+
+  }
+
+  history=[];
+
+  toast(
+
+    'U kthye fotoja origjinale'
+
+  );
+
+};
+
+const comp=
+
+  document.getElementById(
+
+    'compare'
+
+  );
+
+comp.onpointerdown=()=>{
+
+  if(!original)
+
+    return;
+
+  compareData=
+
+    ctx.getImageData(
+
+      0,
+
+      0,
+
+      c.width,
+
+      c.height
+
+    );
+
+  ctx.putImageData(
+
+    original,
+
+    0,
+
+    0
+
+  );
+
+  o.style.visibility='hidden';
+
+};
+
+const end=()=>{
+
+  if(compareData){
+
+    ctx.putImageData(
+
+      compareData,
+
+      0,
+
+      0
+
+    );
+
+    compareData=null;
+
+    o.style.visibility='visible';
+
+  }
+
+};
+
+comp.onpointerup=end;
+
+comp.onpointerleave=end;
+
+comp.onpointercancel=end;
+
+document
+
+.getElementById('save')
+
+.onclick=()=>{
+
+  if(!original)
+
+    return;
+
+  const a=
+
+    document.createElement('a');
+
+  a.download='ILIRI-COLOR.jpg';
+
+  a.href=
+
+    c.toDataURL(
+
+      'image/jpeg',
+
+      .95
+
+    );
+
+  a.click();
+
+  toast(
+
+    'Fotoja u ruajt'
+
+  );
+
+};
+
 </script>
+
 </body>
+
 </html>
