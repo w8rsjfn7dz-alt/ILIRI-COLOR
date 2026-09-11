@@ -277,10 +277,7 @@ button:disabled{opacity:.45}
     if(history.length>12) history.shift();
 
     const W=canvas.width,H=canvas.height,N=W*H;
-
-    // Work on a smoothed proxy image. This suppresses tiny texture/noise but keeps
-    // long architectural edges (wall/ceiling corners, frames and object borders).
-    const maxSide=560;
+    const maxSide=620;
     const scale=Math.min(1,maxSide/Math.max(W,H));
     const w=Math.max(1,Math.round(W*scale)), h=Math.max(1,Math.round(H*scale));
     const pc=document.createElement('canvas');
@@ -292,108 +289,144 @@ button:disabled{opacity:.45}
     const proxy=pctx.getImageData(0,0,w,h), d=proxy.data, PN=w*h;
     const sx=Math.max(0,Math.min(w-1,Math.round(x*scale)));
     const sy=Math.max(0,Math.min(h-1,Math.round(y*scale)));
+    const start=sy*w+sx;
 
-    const gray=new Float32Array(PN);
+    // Luminance + chroma representation. Chroma changes little with light/shadow,
+    // so the same wall can be followed even when one side is darker.
+    const gray=new Float32Array(PN), cr=new Float32Array(PN), cb=new Float32Array(PN);
     for(let p=0;p<PN;p++){
-      const i=p*4; gray[p]=lum(d[i],d[i+1],d[i+2]);
+      const i=p*4, r=d[i], g=d[i+1], b=d[i+2];
+      const L=lum(r,g,b);
+      gray[p]=L;
+      const sum=r+g+b+1;
+      cr[p]=r/sum; cb[p]=b/sum;
     }
 
-    // Sobel edge map. Architectural boundaries become hard barriers.
+    // Multi-scale architectural edge map. Corners and ceiling lines are usually
+    // long continuous edges, while wall texture is short and fragmented.
     const edge=new Float32Array(PN);
-    for(let yy=1;yy<h-1;yy++){
-      for(let xx=1;xx<w-1;xx++){
+    for(let yy=3;yy<h-3;yy++){
+      for(let xx=3;xx<w-3;xx++){
         const p=yy*w+xx;
-        const a=gray[p-w-1], b=gray[p-w], c=gray[p-w+1];
-        const e=gray[p-1], f=gray[p+1];
-        const g=gray[p+w-1], hh=gray[p+w], j=gray[p+w+1];
-        const gx=-a+c-2*e+2*f-g+j;
-        const gy=-a-2*b-c+g+2*hh+j;
-        edge[p]=Math.sqrt(gx*gx+gy*gy);
+        const gx1=Math.abs(gray[p+1]-gray[p-1]);
+        const gy1=Math.abs(gray[p+w]-gray[p-w]);
+        const gx3=Math.abs(gray[p+3]-gray[p-3])*.55;
+        const gy3=Math.abs(gray[p+3*w]-gray[p-3*w])*.55;
+        edge[p]=Math.max(gx1+gy1,gx3+gy3);
       }
     }
-    // Dilate strong edges one pixel so the fill cannot leak through tiny gaps.
-    const barrier=new Uint8Array(PN);
-    const edgeCut=32;
+
+    // Low threshold first, then keep only long connected edge chains.
+    const lowEdge=14, strongEdge=38;
+    const candidate=new Uint8Array(PN), visited=new Uint8Array(PN), barrier=new Uint8Array(PN);
+    for(let p=0;p<PN;p++) if(edge[p]>=lowEdge) candidate[p]=1;
+    const q=new Int32Array(PN);
+    const minChain=Math.max(12,Math.round(Math.min(w,h)*0.035));
+    for(let p0=0;p0<PN;p0++){
+      if(!candidate[p0]||visited[p0]) continue;
+      let head=0,tail=0; q[tail++]=p0; visited[p0]=1;
+      const comp=[];
+      let minx=w,maxx=0,miny=h,maxy=0,strong=false;
+      while(head<tail){
+        const p=q[head++]; comp.push(p);
+        const yy=(p/w)|0, xx=p-yy*w;
+        minx=Math.min(minx,xx); maxx=Math.max(maxx,xx); miny=Math.min(miny,yy); maxy=Math.max(maxy,yy);
+        if(edge[p]>=strongEdge) strong=true;
+        for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+          if(!dx&&!dy) continue;
+          const nx=xx+dx, ny=yy+dy;
+          if(nx<0||ny<0||nx>=w||ny>=h) continue;
+          const np=ny*w+nx;
+          if(candidate[np]&&!visited[np]){visited[np]=1;q[tail++]=np;}
+        }
+      }
+      const span=Math.max(maxx-minx,maxy-miny);
+      if(strong || comp.length>=minChain || span>=minChain){
+        for(const p of comp) barrier[p]=1;
+      }
+    }
+
+    // Thicken structural edges, but open a small disk around the touched point so
+    // the user can tap close to a corner without the seed being trapped.
+    const thick=barrier.slice();
     for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
       const p=yy*w+xx;
-      if(edge[p]>edgeCut){
-        for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) barrier[(yy+dy)*w+xx+dx]=1;
+      if(!barrier[p]) continue;
+      for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+        const nx=xx+dx, ny=yy+dy;
+        if(nx>=0&&ny>=0&&nx<w&&ny<h) thick[ny*w+nx]=1;
       }
     }
+    for(let yy=Math.max(0,sy-4);yy<=Math.min(h-1,sy+4);yy++)
+      for(let xx=Math.max(0,sx-4);xx<=Math.min(w-1,sx+4);xx++) thick[yy*w+xx]=0;
 
-    const stats=sampleStats(d,w,h,sx,sy);
-    const seed=stats.avg;
-    const seedTol=Math.max(28,Math.min(58,32+stats.std*.85));
-    const stepTol=Math.max(18,Math.min(36,20+stats.std*.45));
-    const lumTol=Math.max(24,Math.min(46,28+stats.std*.35));
+    // Seed model from a clean core around the tap.
+    let sr=0,sg=0,sb=0,sl=0,nseed=0;
+    for(let yy=Math.max(0,sy-5);yy<=Math.min(h-1,sy+5);yy++){
+      for(let xx=Math.max(0,sx-5);xx<=Math.min(w-1,sx+5);xx++){
+        const p=yy*w+xx, i=p*4;
+        if(thick[p]) continue;
+        sr+=cr[p]; sb+=cb[p]; sl+=gray[p]; sg+=(d[i+1]/(d[i]+d[i+1]+d[i+2]+1)); nseed++;
+      }
+    }
+    if(!nseed) nseed=1;
+    sr/=nseed; sg/=nseed; sb/=nseed; sl/=nseed;
 
-    const seen=new Uint8Array(PN), pmask=new Uint8Array(PN), queue=new Int32Array(PN);
+    const pmask=new Uint8Array(PN), seen=new Uint8Array(PN), queue=new Int32Array(PN);
     let head=0,tail=0,count=0;
-    const start=sy*w+sx; queue[tail++]=start;
-
+    queue[tail++]=start;
+    const chromaTol=.105; // tolerant to shadows, strict across different paint/materials
+    const lightTol=92;
     while(head<tail){
       const p=queue[head++];
       if(seen[p]) continue;
       seen[p]=1;
-      const yy=(p/w)|0, xx=p-yy*w, i=p*4;
-      const c=[d[i],d[i+1],d[i+2]];
-      if(dist(c,seed)>seedTol) continue;
-      if(p!==start && barrier[p]) continue;
+      if(p!==start && thick[p]) continue;
+      const yy=(p/w)|0, xx=p-yy*w;
+      const i=p*4;
+      const sum=d[i]+d[i+1]+d[i+2]+1;
+      const rr=d[i]/sum, gg=d[i+1]/sum, bb=d[i+2]/sum;
+      const cd=Math.sqrt((rr-sr)*(rr-sr)+(gg-sg)*(gg-sg)+(bb-sb)*(bb-sb));
+      if(cd>chromaTol) continue;
+      if(Math.abs(gray[p]-sl)>lightTol && edge[p]>8) continue;
       pmask[p]=1; count++;
-
-      const add=(np)=>{
-        if(np<0||np>=PN||seen[np]||tail>=PN) return;
-        if(barrier[np] && np!==start) return;
-        const ni=np*4, nc=[d[ni],d[ni+1],d[ni+2]];
-        if(dist(c,nc)>stepTol) return;
-        if(Math.abs(gray[p]-gray[np])>lumTol) return;
-        queue[tail++]=np;
-      };
-      if(xx>0) add(p-1);
-      if(xx<w-1) add(p+1);
-      if(yy>0) add(p-w);
-      if(yy<h-1) add(p+w);
+      if(xx>0&&!seen[p-1]) queue[tail++]=p-1;
+      if(xx<w-1&&!seen[p+1]) queue[tail++]=p+1;
+      if(yy>0&&!seen[p-w]) queue[tail++]=p-w;
+      if(yy<h-1&&!seen[p+w]) queue[tail++]=p+w;
+      if(tail>=PN) break;
     }
 
-    // Close tiny holes caused by texture/brush marks without crossing real edges.
-    for(let pass=0;pass<2;pass++){
+    // Fill small holes only when enclosed by the selected face.
+    for(let pass=0;pass<3;pass++){
       const add=[];
       for(let yy=1;yy<h-1;yy++) for(let xx=1;xx<w-1;xx++){
         const p=yy*w+xx;
-        if(pmask[p]||barrier[p]) continue;
+        if(pmask[p]||thick[p]) continue;
         let n=0;
         if(pmask[p-1])n++; if(pmask[p+1])n++; if(pmask[p-w])n++; if(pmask[p+w])n++;
         if(n>=3) add.push(p);
       }
-      add.forEach(p=>pmask[p]=1);
+      for(const p of add) pmask[p]=1;
     }
 
-    // Reject implausible selections.
     let pcount=0; for(let p=0;p<PN;p++) if(pmask[p]) pcount++;
-    if(pcount>PN*.42){
-      history.pop();
-      toast('Prek më në qendër të faqes së murit');
-      isPainting=false;
-      return;
+    if(pcount>PN*.50){
+      history.pop(); toast('Prek më në qendër të faqes së murit'); isPainting=false; return;
     }
-    if(pcount<35){
-      history.pop();
-      toast('Prek një zonë më të pastër të murit');
-      isPainting=false;
-      return;
+    if(pcount<Math.max(40,PN*.002)){
+      history.pop(); toast('Prek një pjesë më të pastër të murit'); isPainting=false; return;
     }
 
-    // Upscale proxy mask to the full photo. This gives a solid, coherent wall face.
-    const mask=new Uint8Array(N);
-    let fullCount=0;
+    // Upscale without smoothing so the mask follows detected boundaries exactly.
+    const mask=new Uint8Array(N); let fullCount=0;
     for(let yy=0;yy<H;yy++){
       const py=Math.min(h-1,Math.floor(yy*scale));
       for(let xx=0;xx<W;xx++){
         const px=Math.min(w-1,Math.floor(xx*scale));
-        if(pmask[py*w+px]){ mask[yy*W+xx]=1; fullCount++; }
+        if(pmask[py*w+px]){mask[yy*W+xx]=1;fullCount++;}
       }
     }
-
     applyMask(current,mask,fullCount);
     isPainting=false;
   }
