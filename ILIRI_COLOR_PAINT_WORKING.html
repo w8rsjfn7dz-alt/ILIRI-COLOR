@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#123b2d" />
+<title>ILIRI COLOR</title>
+<style>
+:root{
+  --bg:#f4f1e8;
+  --card:#ffffff;
+  --green:#123b2d;
+  --green2:#1d5b44;
+  --gold:#c7a85b;
+  --text:#18231d;
+  --muted:#6e776f;
+  --line:#ded9cc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.app{
+  max-width:980px;
+  margin:0 auto;
+  padding:18px 14px 28px;
+}
+.header{
+  background:linear-gradient(145deg,var(--green),#0a2e23);
+  color:#fff;
+  border-radius:22px;
+  padding:18px 18px 16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  border:1px solid rgba(199,168,91,.45);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logoDot{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 0 3px rgba(199,168,91,.18);
+}
+h1{
+  margin:0;
+  font-size:26px;
+  letter-spacing:.4px;
+}
+.sub{
+  margin-top:3px;
+  color:#e7e0c8;
+  font-size:13px;
+  letter-spacing:1.5px;
+}
+.card{
+  margin-top:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px;
+  box-shadow:0 4px 18px rgba(0,0,0,.05);
+}
+.upload{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+button,.fileLabel{
+  border:0;
+  border-radius:14px;
+  padding:12px 15px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.fileLabel,.primary{
+  background:var(--green);
+  color:white;
+}
+.secondary{
+  background:#ece8de;
+  color:var(--text);
+}
+.danger{
+  background:#8c2e2e;
+  color:#fff;
+}
+.fileInput{display:none}
+.stageWrap{
+  margin-top:12px;
+  background:#111;
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  min-height:280px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#stage{
+  position:relative;
+  width:100%;
+  min-height:280px;
+  touch-action:none;
+  background:#222;
+}
+#roomImage{
+  display:none;
+  width:100%;
+  height:auto;
+  max-height:68vh;
+  object-fit:contain;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+#paintCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+.empty{
+  color:#fff;
+  text-align:center;
+  padding:55px 18px;
+  width:100%;
+}
+.empty strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:6px;
+}
+.hint{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.45;
+}
+.paletteTitle{
+  font-size:14px;
+  font-weight:800;
+  margin:0 0 10px;
+}
+.palette{
+  display:none;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+.palette.open{display:grid;}
+.allColorsBtn{
+  width:100%;
+  margin:0 0 10px;
+  background:var(--green);
+  color:#fff;
+}
+.colorBtn{
+  padding:10px 8px;
+  border-radius:13px;
+  border:2px solid transparent;
+  background:#f6f3ec;
+  font-size:12px;
+  font-weight:700;
+  min-height:48px;
+}
+.colorBtn.active{
+  border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(18,59,45,.12);
+}
+.swatch{
+  display:block;
+  width:22px;height:22px;
+  border-radius:50%;
+  margin:0 auto 5px;
+  border:1px solid rgba(0,0,0,.16);
+}
+.actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:12px;
+}
+.actions button{padding:12px 8px}
+.compare{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.compare img{
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--line);
+}
+.compareTitle{
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 5px;
+}
+@media(max-width:560px){
+  .palette{grid-template-columns:repeat(3,1fr)}
+  h1{font-size:23px}
+  .actions{grid-template-columns:1fr 1fr}
+  .actions button:last-child{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <span class="logoDot"></span>
+      <div>
+        <h1>ILIRI COLOR</h1>
+        <div class="sub">STUDIO E NGJYRAVE</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="upload">
+      <label class="fileLabel" for="fileInput">＋ Ngarko foton</label>
+      <input class="fileInput" id="fileInput" type="file" accept="image/*" />
+      <button class="secondary" id="compareBtn">Krahaso</button>
+    </div>
+
+    <div class="stageWrap">
+      <div id="stage">
+        <div id="empty" class="empty">
+          <strong>NGARKO NJË FOTO</strong>
+          Ngarko foton e dhomës
+        </div>
+        <img id="roomImage" alt="Fotoja e dhomës" />
+        <canvas id="paintCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="hint">
+      Zgjidh ngjyrën dhe prek faqen e murit ose objektin që do të ngjyrosësh. Ngjyra aplikohet menjëherë në zonën e lidhur deri te kufijtë e dukshëm.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="paletteTitle">ZGJIDH NGJYRËN</div>
+    <button class="allColorsBtn" id="allColorsBtn">🎨 TË GJITHA NGJYRAT / COLORS</button>
+    <div class="palette" id="palette"></div>
+
+    <div class="actions">
+      <button class="secondary" id="undoBtn">↶ Kthim pas</button>
+      <button class="danger" id="clearBtn">Fshi</button>
+      <button class="primary" id="saveBtn">↓ Ruaj foton</button>
+    </div>
+
+    <div class="compare" id="compare">
+      <div>
+        <div class="compareTitle">Para</div>
+        <img id="beforeImg" alt="Para">
+      </div>
+      <div>
+        <div class="compareTitle">Pas</div>
+        <img id="afterImg" alt="Pas">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const colors = [
+  ["E bardhë e ngrohtë","#F5F0E5"],
+  ["Gri perle","#D7D7D2"],
+  ["Rërë","#D8C3A5"],
+  ["Mjaltë","#C99A4A"],
+  ["Terrakotë","#B96643"],
+  ["Argjilë","#A56C52"],
+  ["Jeshile e lehtë","#A9B79C"],
+  ["Jeshile pylli","#49624C"],
+  ["Jeshile e thellë","#264236"],
+  ["Blu e lehtë","#AFC8D8"],
+  ["Blu deti","#3E6F8E"],
+  ["Blu nate","#26384F"],
+  ["Rozë e butë","#D9B7B5"],
+  ["Vjollcë gri","#8D8293"],
+  ["Gri e ngrohtë","#AAA39A"],
+  ["Gri ulliri","#858875"],
+  ["E verdhë","#D9B847"],
+  ["Antracit","#3C4141"]
+];
+
+const fileInput = document.getElementById("fileInput");
+const roomImage = document.getElementById("roomImage");
+const canvas = document.getElementById("paintCanvas");
+const ctx = canvas.getContext("2d");
+const empty = document.getElementById("empty");
+const palette = document.getElementById("palette");
+const allColorsBtn = document.getElementById("allColorsBtn");
+const undoBtn = document.getElementById("undoBtn");
+const clearBtn = document.getElementById("clearBtn");
+const saveBtn = document.getElementById("saveBtn");
+const compareBtn = document.getElementById("compareBtn");
+const compare = document.getElementById("compare");
+const beforeImg = document.getElementById("beforeImg");
+const afterImg = document.getElementById("afterImg");
+
+let selectedColor = colors[7][1];
+let history = [];
+let originalDataURL = "";
+let naturalW = 0, naturalH = 0;
+
+function hexToRgb(hex){
+  const v = hex.replace("#","");
+  return {
+    r:parseInt(v.slice(0,2),16),
+    g:parseInt(v.slice(2,4),16),
+    b:parseInt(v.slice(4,6),16)
+  };
+}
+
+
+allColorsBtn.onclick=()=>{
+  const isOpen=palette.classList.toggle("open");
+  allColorsBtn.textContent=isOpen
+    ? "✕ MBYLL NGJYRAT"
+    : "🎨 TË GJITHA NGJYRAT / COLORS";
+};
+
+colors.forEach((c,i)=>{
+  const b=document.createElement("button");
+  b.className="colorBtn"+(i===7?" active":"");
+  b.innerHTML=`<span class="swatch" style="background:${c[1]}"></span>${c[0]}`;
+  b.onclick=()=>{
+    selectedColor=c[1];
+    document.querySelectorAll(".colorBtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  palette.appendChild(b);
+});
+
+function fitCanvas(){
+  if(!roomImage.src) return;
+  const rect=roomImage.getBoundingClientRect();
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  canvas.style.left=(roomImage.offsetLeft||0)+"px";
+  canvas.style.top=(roomImage.offsetTop||0)+"px";
+  canvas.style.width=rect.width+"px";
+  canvas.style.height=rect.height+"px";
+  canvas.width=Math.round(rect.width*dpr);
+  canvas.height=Math.round(rect.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  redrawHistory();
+}
+
+function redrawHistory(){
+  const rect=canvas.getBoundingClientRect();
+  ctx.clearRect(0,0,rect.width,rect.height);
+  history.forEach(p=>drawPaint(p,false));
+}
+
+function drawPaint(p,save=true){
+  const rect=canvas.getBoundingClientRect();
+  const w=Math.max(1,Math.round(rect.width));
+  const h=Math.max(1,Math.round(rect.height));
+
+  const src=document.createElement("canvas");
+  src.width=w; src.height=h;
+  const sctx=src.getContext("2d",{willReadFrequently:true});
+  sctx.drawImage(roomImage,0,0,w,h);
+  const source=sctx.getImageData(0,0,w,h);
+  const d=source.data;
+
+  const sx=Math.max(0,Math.min(w-1,Math.floor(p.x*w)));
+  const sy=Math.max(0,Math.min(h-1,Math.floor(p.y*h)));
+  const seed=(sy*w+sx)*4;
+  const sr=d[seed], sg=d[seed+1], sb=d[seed+2];
+  const target=hexToRgb(p.color);
+
+  // Flood-fill adaptiv: ndjek sipërfaqen e lidhur dhe ndalet në skaje të forta.
+  const visited=new Uint8Array(w*h);
+  const q=new Int32Array(w*h);
+  let head=0, tail=0;
+  const seedPos=sy*w+sx;
+  q[tail++]=seedPos; visited[seedPos]=1;
+
+  const mask=new Uint8Array(w*h);
+  const seedTol=92;      // lejon dritë/hije brenda të njëjtit mur
+  const edgeTol=48;      // ndalon kalimin në tavan/derë/objekte
+
+  function colorDist(i,r,g,b){
+    const dr=d[i]-r, dg=d[i+1]-g, db=d[i+2]-b;
+    return Math.sqrt(dr*dr+dg*dg+db*db);
+  }
+
+  while(head<tail){
+    const pos=q[head++];
+    const x=pos%w, y=(pos/w)|0;
+    const i=pos*4;
+    if(colorDist(i,sr,sg,sb)>seedTol) continue;
+    mask[pos]=1;
+
+    const nbs=[];
+    if(x>0)nbs.push(pos-1);
+    if(x<w-1)nbs.push(pos+1);
+    if(y>0)nbs.push(pos-w);
+    if(y<h-1)nbs.push(pos+w);
+    for(const np of nbs){
+      if(visited[np]) continue;
+      visited[np]=1;
+      const ni=np*4;
+      // Mos kalo një kufi vizual të fortë nga pikseli aktual.
+      if(colorDist(ni,d[i],d[i+1],d[i+2])<=edgeTol && colorDist(ni,sr,sg,sb)<=seedTol){
+        q[tail++]=np;
+      }
+    }
+  }
+
+  const out=document.createElement("canvas");
+  out.width=w; out.height=h;
+  const octx=out.getContext("2d");
+  const od=octx.createImageData(w,h);
+  const px=od.data;
+
+  for(let pos=0;pos<mask.length;pos++){
+    if(!mask[pos]) continue;
+    const i=pos*4;
+    const lum=(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2])/255;
+    // Ngjyra ruan dritën dhe hijet e fotografisë.
+    const shade=0.58+lum*0.58;
+    px[i]=Math.max(0,Math.min(255,Math.round(target.r*shade)));
+    px[i+1]=Math.max(0,Math.min(255,Math.round(target.g*shade)));
+    px[i+2]=Math.max(0,Math.min(255,Math.round(target.b*shade)));
+    px[i+3]=190;
+  }
+  octx.putImageData(od,0,0);
+  ctx.drawImage(out,0,0,rect.width,rect.height);
+  if(save) history.push(p);
+}
+function handlePoint(clientX,clientY){
+  if(!roomImage.src) return;
+  const r=canvas.getBoundingClientRect();
+  const x=(clientX-r.left)/r.width;
+  const y=(clientY-r.top)/r.height;
+  if(x<0||x>1||y<0||y>1) return;
+  drawPaint({x,y,color:selectedColor},true);
+}
+
+canvas.addEventListener("click",e=>handlePoint(e.clientX,e.clientY));
+canvas.addEventListener("touchend",e=>{
+  if(!e.changedTouches.length) return;
+  const t=e.changedTouches[0];
+  handlePoint(t.clientX,t.clientY);
+},{passive:true});
+
+fileInput.addEventListener("change",e=>{
+  const f=e.target.files && e.target.files[0];
+  if(!f) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    originalDataURL=ev.target.result;
+    roomImage.onload=()=>{
+      naturalW=roomImage.naturalWidth;
+      naturalH=roomImage.naturalHeight;
+      empty.style.display="none";
+      roomImage.style.display="block";
+      history=[];
+      requestAnimationFrame(fitCanvas);
+    };
+    roomImage.src=originalDataURL;
+  };
+  reader.readAsDataURL(f);
+});
+
+undoBtn.onclick=()=>{
+  if(!history.length) return;
+  history.pop();
+  redrawHistory();
+};
+
+clearBtn.onclick=()=>{
+  history=[];
+  redrawHistory();
+  compare.style.display="none";
+};
+
+function mergedDataURL(){
+  if(!roomImage.src) return "";
+  const out=document.createElement("canvas");
+  out.width=naturalW;
+  out.height=naturalH;
+  const o=out.getContext("2d");
+  o.drawImage(roomImage,0,0,naturalW,naturalH);
+
+  const overlay=document.createElement("canvas");
+  overlay.width=canvas.width;
+  overlay.height=canvas.height;
+  const oc=overlay.getContext("2d");
+  oc.drawImage(canvas,0,0);
+
+  o.drawImage(overlay,0,0,overlay.width,overlay.height,0,0,naturalW,naturalH);
+  return out.toDataURL("image/jpeg",0.95);
+}
+
+saveBtn.onclick=()=>{
+  const data=mergedDataURL();
+  if(!data) return alert("Ngarko një foto më parë.");
+  const a=document.createElement("a");
+  a.href=data;
+  a.download="ILIRI-COLOR.jpg";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+};
+
+compareBtn.onclick=()=>{
+  if(!roomImage.src) return alert("Ngarko një foto më parë.");
+  beforeImg.src=originalDataURL;
+  afterImg.src=mergedDataURL();
+  compare.style.display=compare.style.display==="grid"?"none":"grid";
+};
+
+window.addEventListener("resize",()=>requestAnimationFrame(fitCanvas));
+</script>
+</body>
+</html>
