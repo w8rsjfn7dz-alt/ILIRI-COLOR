@@ -1,511 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sq">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="theme-color" content="#123b2d" />
-<title>ILIRI COLOR</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b5b3c">
+<title>ILIRI COLORS</title>
 <style>
-:root{
-  --bg:#f4f1e8;
-  --card:#ffffff;
-  --green:#123b2d;
-  --green2:#1d5b44;
-  --gold:#c7a85b;
-  --text:#18231d;
-  --muted:#6e776f;
-  --line:#ded9cc;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-.app{
-  max-width:980px;
-  margin:0 auto;
-  padding:18px 14px 28px;
-}
-.header{
-  background:linear-gradient(145deg,var(--green),#0a2e23);
-  color:#fff;
-  border-radius:22px;
-  padding:18px 18px 16px;
-  box-shadow:0 8px 24px rgba(0,0,0,.12);
-  border:1px solid rgba(199,168,91,.45);
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.logoDot{
-  width:14px;height:14px;border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 0 3px rgba(199,168,91,.18);
-}
-h1{
-  margin:0;
-  font-size:26px;
-  letter-spacing:.4px;
-}
-.sub{
-  margin-top:3px;
-  color:#e7e0c8;
-  font-size:13px;
-  letter-spacing:1.5px;
-}
-.card{
-  margin-top:14px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:14px;
-  box-shadow:0 4px 18px rgba(0,0,0,.05);
-}
-.upload{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-button,.fileLabel{
-  border:0;
-  border-radius:14px;
-  padding:12px 15px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-.fileLabel,.primary{
-  background:var(--green);
-  color:white;
-}
-.secondary{
-  background:#ece8de;
-  color:var(--text);
-}
-.danger{
-  background:#8c2e2e;
-  color:#fff;
-}
-.fileInput{display:none}
-.stageWrap{
-  margin-top:12px;
-  background:#111;
-  border-radius:18px;
-  overflow:hidden;
-  position:relative;
-  min-height:280px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-#stage{
-  position:relative;
-  width:100%;
-  min-height:280px;
-  touch-action:none;
-  background:#222;
-}
-#roomImage{
-  display:none;
-  width:100%;
-  height:auto;
-  max-height:68vh;
-  object-fit:contain;
-  user-select:none;
-  -webkit-user-drag:none;
-}
-#paintCanvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  touch-action:none;
-}
-.empty{
-  color:#fff;
-  text-align:center;
-  padding:55px 18px;
-  width:100%;
-}
-.empty strong{
-  display:block;
-  font-size:18px;
-  margin-bottom:6px;
-}
-.hint{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:8px;
-  line-height:1.45;
-}
-.paletteTitle{
-  font-size:14px;
-  font-weight:800;
-  margin:0 0 10px;
-}
-.palette{
-  display:none;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-.palette.open{display:grid}
-.allColorsBtn{
-  width:100%;
-  margin:0 0 10px;
-  background:var(--green);
-  color:#fff;
-}
-.colorBtn{
-  padding:10px 8px;
-  border-radius:13px;
-  border:2px solid transparent;
-  background:#f6f3ec;
-  font-size:12px;
-  font-weight:700;
-  min-height:48px;
-}
-.colorBtn.active{
-  border-color:var(--green);
-  box-shadow:0 0 0 2px rgba(18,59,45,.12);
-}
-.swatch{
-  display:block;
-  width:22px;height:22px;
-  border-radius:50%;
-  margin:0 auto 5px;
-  border:1px solid rgba(0,0,0,.16);
-}
-.actions{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-  margin-top:12px;
-}
-.actions button{padding:12px 8px}
-.compare{
-  display:none;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:12px;
-}
-.compare img{
-  width:100%;
-  border-radius:14px;
-  border:1px solid var(--line);
-}
-.compareTitle{
-  font-size:12px;
-  color:var(--muted);
-  margin:0 0 5px;
-}
-@media(max-width:560px){
-  .palette{grid-template-columns:repeat(3,1fr)}
-  h1{font-size:23px}
-  .actions{grid-template-columns:1fr 1fr}
-  .actions button:last-child{grid-column:1/-1}
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#f4f4f1;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#152019}
+.app{max-width:900px;margin:auto;padding:8px 8px 20px}
+header{height:64px;background:#0b5b3c;color:#fff;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:8px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:12px;background:#08462f;color:#e0b84d;display:grid;place-items:center;font-weight:900}
+h1{font-size:22px;margin:0;letter-spacing:.3px}.sub{font-size:11px;color:#dce9e3;margin-top:2px}
+.topbtn{border:1px solid #ffffff99;background:transparent;color:#fff;border-radius:11px;padding:9px 12px;font-weight:800}
+.stage{position:relative;background:#dfe4e1;border-radius:18px;overflow:hidden;min-height:72vh;display:flex;align-items:center;justify-content:center}
+.empty{text-align:center;color:#65716a;padding:60px 20px}.empty .cam{font-size:52px;margin-bottom:8px}
+button{border:0;border-radius:12px;padding:10px 13px;font-weight:800;font-size:14px}
+.primary{background:#0b5b3c;color:#fff}.secondary{background:#fff;color:#17201c;border:1px solid #d5ddd8}
+canvas{display:block;width:100%;height:auto;touch-action:none}
+.loading{position:absolute;inset:0;background:#ffffffdf;display:none;align-items:center;justify-content:center;text-align:center;z-index:8;padding:25px}
+.loading.show{display:flex}.spin{width:34px;height:34px;border:4px solid #d8dfdb;border-top-color:#0b5b3c;border-radius:50%;animation:s 1s linear infinite;margin:0 auto 10px}@keyframes s{to{transform:rotate(360deg)}}
+.status{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#102018e8;color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;white-space:nowrap;display:none;z-index:7}.status.show{display:block}
+.bar{display:flex;align-items:center;gap:8px;margin-top:8px;position:sticky;bottom:8px;z-index:10}
+.colorBtn{width:54px;height:54px;border-radius:50%;padding:4px;background:#fff;border:2px solid #0b5b3c;display:grid;place-items:center;flex:0 0 54px}
+.colorBtn span{display:block;width:40px;height:40px;border-radius:50%;background:#f2efe6;border:1px solid #bbb}
+.colorPicker{position:absolute;opacity:0;width:1px;height:1px}
+.bar .secondary,.bar .primary{height:54px}
+.bar .wide{flex:1}
+input[type=file]{display:none}
+.note{font-size:12px;color:#6d7771;text-align:center;margin:7px 4px 0}
+@media(max-width:430px){.stage{min-height:68vh}h1{font-size:20px}.bar button{font-size:12px;padding:8px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="brand">
-      <span class="logoDot"></span>
-      <div>
-        <h1>ILIRI COLOR</h1>
-        <div class="sub">STUDIO E NGJYRAVE</div>
-      </div>
-    </div>
-  </div>
+<header>
+  <div class="brand"><div class="logo">IC</div><div><h1>ILIRI COLORS</h1><div class="sub">Zgjidh ngjyrën dhe prek murin</div></div></div>
+  <button class="topbtn" id="photoBtn">Foto</button>
+</header>
 
-  <div class="card">
-    <div class="upload">
-      <label class="fileLabel" for="fileInput">＋ Ngarko foton</label>
-      <input class="fileInput" id="fileInput" type="file" accept="image/*" />
-      <button class="secondary" id="compareBtn">Krahaso</button>
-    </div>
-
-    <div class="stageWrap">
-      <div id="stage">
-        <div id="empty" class="empty">
-          <strong>NGARKO NJË FOTO</strong>
-          Ngarko foton e dhomës
-        </div>
-        <img id="roomImage" alt="Fotoja e dhomës" />
-        <canvas id="paintCanvas"></canvas>
-      </div>
-    </div>
-
-    <div class="hint">
-      Zgjidh ngjyrën dhe prek një mur ose objekt. Prekja përdor një zonë të kufizuar rreth pikës që zgjodhe, jo gjithë foton.
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="paletteTitle">ZGJIDH NGJYRËN</div>
-    <button class="allColorsBtn" id="allColorsBtn">🎨 TË GJITHA NGJYRAT / COLORS</button>
-    <div class="palette" id="palette"></div>
-
-    <div class="actions">
-      <button class="secondary" id="undoBtn">↶ Kthim pas</button>
-      <button class="danger" id="clearBtn">Fshi</button>
-      <button class="primary" id="saveBtn">↓ Ruaj foton</button>
-    </div>
-
-    <div class="compare" id="compare">
-      <div>
-        <div class="compareTitle">Para</div>
-        <img id="beforeImg" alt="Para">
-      </div>
-      <div>
-        <div class="compareTitle">Pas</div>
-        <img id="afterImg" alt="Pas">
-      </div>
-    </div>
-  </div>
+<div class="stage" id="stage">
+  <div class="empty" id="empty"><div class="cam">📷</div><div>Ngarko foton e dhomës</div><button class="primary" id="chooseBtn" style="margin-top:14px">Zgjidh foton</button></div>
+  <canvas id="canvas" hidden></canvas>
+  <div class="loading" id="loading"><div><div class="spin"></div><b id="loadTitle">Po ngarkohet AI…</b><div style="font-size:12px;color:#68736d;margin-top:5px">Herën e parë mund të zgjasë pak.</div></div></div>
+  <div class="status" id="status"></div>
 </div>
 
-<script>
-const colors = [
-  ["E bardhë e ngrohtë","#F5F0E5"],
-  ["Gri perle","#D7D7D2"],
-  ["Rërë","#D8C3A5"],
-  ["Mjaltë","#C99A4A"],
-  ["Terrakotë","#B96643"],
-  ["Argjilë","#A56C52"],
-  ["Jeshile e lehtë","#A9B79C"],
-  ["Jeshile pylli","#49624C"],
-  ["Jeshile e thellë","#264236"],
-  ["Blu e lehtë","#AFC8D8"],
-  ["Blu deti","#3E6F8E"],
-  ["Blu nate","#26384F"],
-  ["Rozë e butë","#D9B7B5"],
-  ["Vjollcë gri","#8D8293"],
-  ["Gri e ngrohtë","#AAA39A"],
-  ["Gri ulliri","#858875"],
-  ["E verdhë","#D9B847"],
-  ["Antracit","#3C4141"]
-];
+<div class="bar" id="bar" hidden>
+  <label class="colorBtn" for="colorPicker" title="Të gjitha ngjyrat"><span id="colorDot"></span></label>
+  <input class="colorPicker" id="colorPicker" type="color" value="#f2efe6">
+  <button class="secondary" id="undoBtn">↶ Kthim</button>
+  <button class="secondary" id="clearBtn">Fshij</button>
+  <button class="primary wide" id="saveBtn">Ruaj foton</button>
+</div>
+<div class="note" id="note" hidden>Prek rrethin e ngjyrës për të zgjedhur çdo ngjyrë të mundshme. Pastaj prek direkt faqen e murit.</div>
+<input id="fileInput" type="file" accept="image/*">
+</div>
 
-const fileInput = document.getElementById("fileInput");
-const roomImage = document.getElementById("roomImage");
-const canvas = document.getElementById("paintCanvas");
-const ctx = canvas.getContext("2d");
-const empty = document.getElementById("empty");
-const palette = document.getElementById("palette");
-const allColorsBtn = document.getElementById("allColorsBtn");
-const undoBtn = document.getElementById("undoBtn");
-const clearBtn = document.getElementById("clearBtn");
-const saveBtn = document.getElementById("saveBtn");
-const compareBtn = document.getElementById("compareBtn");
-const compare = document.getElementById("compare");
-const beforeImg = document.getElementById("beforeImg");
-const afterImg = document.getElementById("afterImg");
+<script type="module">
+import {env,SamModel,AutoProcessor,RawImage,Tensor} from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.14.0';
+env.allowLocalModels=false;
+const MODEL='Xenova/slimsam-77-uniform';
 
-let selectedColor = colors[7][1];
-let history = [];
-let originalDataURL = "";
-let naturalW = 0, naturalH = 0;
+const c=document.getElementById('canvas'), ctx=c.getContext('2d',{willReadFrequently:true});
+const file=document.getElementById('fileInput'), empty=document.getElementById('empty'), bar=document.getElementById('bar'), note=document.getElementById('note');
+const loading=document.getElementById('loading'), loadTitle=document.getElementById('loadTitle'), status=document.getElementById('status');
+const picker=document.getElementById('colorPicker'), dot=document.getElementById('colorDot');
 
-function hexToRgb(hex){
-  const v = hex.replace("#","");
-  return {
-    r:parseInt(v.slice(0,2),16),
-    g:parseInt(v.slice(2,4),16),
-    b:parseInt(v.slice(4,6),16)
+let color=picker.value, original=null, history=[], model=null, processor=null, imageInputs=null, embeddings=null, busy=false;
+
+function toast(t){status.textContent=t;status.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>status.classList.remove('show'),1800)}
+picker.addEventListener('input',()=>{color=picker.value;dot.style.background=color;toast('Ngjyra u zgjodh')});
+dot.style.background=color;
+document.getElementById('chooseBtn').onclick=()=>file.click();
+document.getElementById('photoBtn').onclick=()=>file.click();
+
+async function getAI(){
+  if(model&&processor)return;
+  loading.classList.add('show'); loadTitle.textContent='Po ngarkohet AI…';
+  try{
+    [model,processor]=await Promise.all([
+      SamModel.from_pretrained(MODEL,{quantized:true}),
+      AutoProcessor.from_pretrained(MODEL)
+    ]);
+  } finally { loading.classList.remove('show'); }
+}
+
+file.onchange=async()=>{
+  const f=file.files?.[0]; if(!f)return;
+  const url=URL.createObjectURL(f), img=new Image();
+  img.onload=async()=>{
+    let w=img.naturalWidth,h=img.naturalHeight;
+    const s=Math.min(1,1600/Math.max(w,h)); w=Math.round(w*s);h=Math.round(h*s);
+    c.width=w;c.height=h;ctx.drawImage(img,0,0,w,h);
+    original=ctx.getImageData(0,0,w,h);history=[];
+    c.hidden=false;empty.hidden=true;bar.hidden=false;note.hidden=false;
+    document.getElementById('stage').style.minHeight='0';
+    URL.revokeObjectURL(url);
+    try{
+      await getAI();
+      loading.classList.add('show');loadTitle.textContent='AI po analizon foton…';
+      const raw=await RawImage.read(c.toDataURL('image/jpeg',.92));
+      imageInputs=await processor(raw);
+      embeddings=await model.get_image_embeddings(imageInputs);
+      toast('Gati — zgjidh ngjyrën dhe prek murin');
+    }catch(e){console.error(e);toast('AI nuk u ngarkua — provo përsëri');}
+    finally{loading.classList.remove('show')}
   };
+  img.src=url;file.value='';
+};
+
+function point(ev){const r=c.getBoundingClientRect();return[(ev.clientX-r.left)*c.width/r.width,(ev.clientY-r.top)*c.height/r.height]}
+function hex(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+
+async function segmentAt(x,y){
+  const resh=imageInputs.reshaped_input_sizes[0];
+  const px=x/c.width*resh[1], py=y/c.height*resh[0];
+  const input_points=new Tensor('float32',[px,py],[1,1,1,2]);
+  const input_labels=new Tensor('int64',[1],[1,1,1]);
+  const out=await model({...embeddings,input_points,input_labels});
+  const masks=await processor.post_process_masks(out.pred_masks,imageInputs.original_sizes,imageInputs.reshaped_input_sizes);
+  const m=masks[0];
+  const scores=out.iou_scores.data;
+  let best=0; for(let i=1;i<scores.length;i++) if(scores[i]>scores[best]) best=i;
+  const H=m.dims[m.dims.length-2], W=m.dims[m.dims.length-1];
+  const plane=H*W, start=Math.min(best*plane,Math.max(0,m.data.length-plane));
+  return {data:m.data,start,W,H};
 }
 
-allColorsBtn.addEventListener("click",()=>{
-  const opened = palette.classList.toggle("open");
-  allColorsBtn.textContent = opened ? "✕ MBYLL NGJYRAT" : "🎨 TË GJITHA NGJYRAT / COLORS";
-});
-
-colors.forEach((c,i)=>{
-  const b=document.createElement("button");
-  b.className="colorBtn"+(i===7?" active":"");
-  b.innerHTML=`<span class="swatch" style="background:${c[1]}"></span>${c[0]}`;
-  b.onclick=()=>{
-    selectedColor=c[1];
-    document.querySelectorAll(".colorBtn").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-  };
-  palette.appendChild(b);
-});
-
-function fitCanvas(){
-  if(!roomImage.src) return;
-  const rect=roomImage.getBoundingClientRect();
-  const dpr=Math.max(1,window.devicePixelRatio||1);
-  canvas.style.left=(roomImage.offsetLeft||0)+"px";
-  canvas.style.top=(roomImage.offsetTop||0)+"px";
-  canvas.style.width=rect.width+"px";
-  canvas.style.height=rect.height+"px";
-  canvas.width=Math.round(rect.width*dpr);
-  canvas.height=Math.round(rect.height*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  redrawHistory();
-}
-
-function redrawHistory(){
-  const rect=canvas.getBoundingClientRect();
-  ctx.clearRect(0,0,rect.width,rect.height);
-  history.forEach(p=>drawPaint(p,false));
-}
-
-function drawPaint(p,save=true){
-  const rect=canvas.getBoundingClientRect();
-  const img=document.createElement("canvas");
-  img.width=Math.max(1,Math.round(rect.width));
-  img.height=Math.max(1,Math.round(rect.height));
-  const ictx=img.getContext("2d");
-  ictx.drawImage(roomImage,0,0,img.width,img.height);
-
-  const id=ictx.getImageData(0,0,img.width,img.height);
-  const data=id.data;
-  const sx=Math.max(0,Math.min(img.width-1,Math.floor(p.x*img.width)));
-  const sy=Math.max(0,Math.min(img.height-1,Math.floor(p.y*img.height)));
-  const idx=(sy*img.width+sx)*4;
-  const sr=data[idx], sg=data[idx+1], sb=data[idx+2];
-  const target=hexToRgb(p.color);
-  const tol=42;
-  const radius=Math.max(45,Math.min(img.width,img.height)*0.22);
-
-  const mask=new Uint8ClampedArray(img.width*img.height);
-  const qx=new Int32Array(img.width*img.height);
-  const qy=new Int32Array(img.width*img.height);
-  let qs=0, qe=0;
-  qx[qe]=sx; qy[qe]=sy; qe++;
-
-  const centerX=sx, centerY=sy;
-  function similar(x,y){
-    const di=(y*img.width+x)*4;
-    const dr=data[di]-sr, dg=data[di+1]-sg, db=data[di+2]-sb;
-    const dist=Math.sqrt(dr*dr+dg*dg+db*db);
-    const dx=x-centerX, dy=y-centerY;
-    return dist<tol && (dx*dx+dy*dy)<radius*radius;
+function applyMask(M){
+  history.push(ctx.getImageData(0,0,c.width,c.height));
+  const img=ctx.getImageData(0,0,c.width,c.height), d=img.data, [tr,tg,tb]=hex(color);
+  for(let y=0;y<c.height;y++){
+    const my=Math.min(M.H-1,Math.floor(y*M.H/c.height));
+    for(let x=0;x<c.width;x++){
+      const mx=Math.min(M.W-1,Math.floor(x*M.W/c.width));
+      if(M.data[M.start+my*M.W+mx]>0){
+        const i=(y*c.width+x)*4;
+        const lum=(d[i]+d[i+1]+d[i+2])/765;
+        const a=.68, shade=.72+lum*.30;
+        d[i]=Math.round(d[i]*(1-a)+tr*a*shade);
+        d[i+1]=Math.round(d[i+1]*(1-a)+tg*a*shade);
+        d[i+2]=Math.round(d[i+2]*(1-a)+tb*a*shade);
+      }
+    }
   }
-
-  while(qs<qe){
-    const x=qx[qs], y=qy[qs]; qs++;
-    const mi=y*img.width+x;
-    if(mask[mi]) continue;
-    mask[mi]=1;
-    if(!similar(x,y)) continue;
-
-    const di=mi*4;
-    const lum=(data[di]+data[di+1]+data[di+2])/765;
-    const alpha=.60;
-    data[di]=Math.round(data[di]*(1-alpha)+target.r*alpha*(0.78+lum*0.25));
-    data[di+1]=Math.round(data[di+1]*(1-alpha)+target.g*alpha*(0.78+lum*0.25));
-    data[di+2]=Math.round(data[di+2]*(1-alpha)+target.b*alpha*(0.78+lum*0.25));
-
-    if(x>0){qx[qe]=x-1;qy[qe]=y;qe++}
-    if(x<img.width-1){qx[qe]=x+1;qy[qe]=y;qe++}
-    if(y>0){qx[qe]=x;qy[qe]=y-1;qe++}
-    if(y<img.height-1){qx[qe]=x;qy[qe]=y+1;qe++}
-    if(qe>=qx.length-4) break;
-  }
-
-  ctx.globalAlpha=.96;
-  ctx.drawImage(img,0,0,rect.width,rect.height);
-  ctx.globalAlpha=1;
-
-  if(save) history.push(p);
+  ctx.putImageData(img,0,0);
 }
 
-function handlePoint(clientX,clientY){
-  if(!roomImage.src) return;
-  const r=canvas.getBoundingClientRect();
-  const x=(clientX-r.left)/r.width;
-  const y=(clientY-r.top)/r.height;
-  if(x<0||x>1||y<0||y>1) return;
-  drawPaint({x,y,color:selectedColor},true);
-}
-
-canvas.addEventListener("click",e=>handlePoint(e.clientX,e.clientY));
-canvas.addEventListener("touchend",e=>{
-  if(!e.changedTouches.length) return;
-  const t=e.changedTouches[0];
-  handlePoint(t.clientX,t.clientY);
-},{passive:true});
-
-fileInput.addEventListener("change",e=>{
-  const f=e.target.files && e.target.files[0];
-  if(!f) return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    originalDataURL=ev.target.result;
-    roomImage.onload=()=>{
-      naturalW=roomImage.naturalWidth;
-      naturalH=roomImage.naturalHeight;
-      empty.style.display="none";
-      roomImage.style.display="block";
-      history=[];
-      requestAnimationFrame(fitCanvas);
-    };
-    roomImage.src=originalDataURL;
-  };
-  reader.readAsDataURL(f);
+c.addEventListener('pointerup',async ev=>{
+  if(!embeddings||busy)return;
+  busy=true; const [x,y]=point(ev);
+  loading.classList.add('show');loadTitle.textContent='Po lyhet faqja…';
+  try{const M=await segmentAt(x,y);applyMask(M);toast('U lye faqja e zgjedhur');}
+  catch(e){console.error(e);toast('Nuk u bë — prek përsëri murin');}
+  finally{loading.classList.remove('show');busy=false}
 });
 
-undoBtn.onclick=()=>{
-  if(!history.length) return;
-  history.pop();
-  redrawHistory();
-};
-
-clearBtn.onclick=()=>{
-  history=[];
-  redrawHistory();
-  compare.style.display="none";
-};
-
-function mergedDataURL(){
-  if(!roomImage.src) return "";
-  const out=document.createElement("canvas");
-  out.width=naturalW;
-  out.height=naturalH;
-  const o=out.getContext("2d");
-  o.drawImage(roomImage,0,0,naturalW,naturalH);
-
-  const overlay=document.createElement("canvas");
-  overlay.width=canvas.width;
-  overlay.height=canvas.height;
-  const oc=overlay.getContext("2d");
-  oc.drawImage(canvas,0,0);
-
-  o.drawImage(overlay,0,0,overlay.width,overlay.height,0,0,naturalW,naturalH);
-  return out.toDataURL("image/jpeg",0.95);
-}
-
-saveBtn.onclick=()=>{
-  const data=mergedDataURL();
-  if(!data) return alert("Ngarko një foto më parë.");
-  const a=document.createElement("a");
-  a.href=data;
-  a.download="ILIRI-COLOR.jpg";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-};
-
-compareBtn.onclick=()=>{
-  if(!roomImage.src) return alert("Ngarko një foto më parë.");
-  beforeImg.src=originalDataURL;
-  afterImg.src=mergedDataURL();
-  compare.style.display=compare.style.display==="grid"?"none":"grid";
-};
-
-window.addEventListener("resize",()=>requestAnimationFrame(fitCanvas));
+document.getElementById('undoBtn').onclick=()=>{if(!history.length)return;ctx.putImageData(history.pop(),0,0);toast('U kthye pas')};
+document.getElementById('clearBtn').onclick=()=>{if(!original)return;ctx.putImageData(original,0,0);history=[];toast('Fotoja u pastrua')};
+document.getElementById('saveBtn').onclick=()=>{if(!original)return;const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',.95);a.download='ILIRI-COLORS.jpg';document.body.appendChild(a);a.click();a.remove()};
 </script>
 </body>
 </html>
