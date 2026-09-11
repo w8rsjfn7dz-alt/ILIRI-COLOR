@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d5b3d">
+<title>ILIRI COLOR AI</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:#f3f4f2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17201c}.app{max-width:900px;margin:auto;padding:10px 9px 25px}header{display:flex;align-items:center;justify-content:space-between;background:#0d5b3d;color:#fff;border-radius:18px;padding:10px 12px;margin-bottom:9px}.brand{display:flex;align-items:center;gap:9px}.logo{width:46px;height:46px;border-radius:13px;background:#08472f;color:#e2bb50;display:grid;place-items:center;font-weight:900;font-size:21px}h1{font-size:20px;margin:0}.sub{font-size:11px;color:#dbe9e3;margin-top:2px}.top{border:1px solid #ffffffa0;background:transparent;color:#fff;border-radius:11px;padding:9px 11px;font-weight:800}.card{background:#fff;border:1px solid #d7ddd9;border-radius:18px;padding:9px}.stage{position:relative;background:#e4e7e5;border-radius:14px;overflow:hidden;min-height:410px;display:flex;align-items:center;justify-content:center}.empty{text-align:center;color:#68736d;padding:55px 20px}.cam{font-size:54px;margin-bottom:8px}canvas{display:block;width:100%;height:auto;touch-action:none}.overlay{position:absolute;inset:0;pointer-events:none;width:100%;height:100%}.status{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:#102018e8;color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;white-space:nowrap;display:none;z-index:4}.status.show{display:block}.ai{position:absolute;left:10px;top:10px;background:#0d5b3de8;color:#fff;padding:7px 9px;border-radius:999px;font-size:11px;font-weight:800;z-index:4}.controls{padding:13px 1px 2px}.title{font-weight:900;margin:0 0 9px 2px}.palette{display:flex;gap:9px;overflow-x:auto;padding:3px 3px 11px}.sw{flex:0 0 49px;height:49px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 1px #bcc5c0;position:relative}.sw.on{box-shadow:0 0 0 3px #0d5b3d}.sw.on:after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:900;color:#0d5b3d;text-shadow:0 1px #fff}.actions{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}button{border:0;border-radius:12px;padding:11px 4px;background:#0d5b3d;color:#fff;font-weight:800;font-size:11px}.secondary{background:#f6f7f6;color:#1d2822;border:1px solid #d7ddd9}.danger{background:#f6f7f6;color:#812d2d;border:1px solid #e0cccc}.ico{display:block;font-size:19px;margin-bottom:4px}.hint{font-size:12px;color:#68736d;line-height:1.4;margin:10px 3px 2px}.loading{position:absolute;inset:0;background:#ffffffdc;z-index:8;display:none;align-items:center;justify-content:center;text-align:center;padding:30px}.loading.show{display:flex}.spin{width:34px;height:34px;border:4px solid #d7ddd9;border-top-color:#0d5b3d;border-radius:50%;animation:s 1s linear infinite;margin:0 auto 12px}@keyframes s{to{transform:rotate(360deg)}}input{display:none}@media(max-width:420px){.actions button{font-size:10px;padding:10px 2px}.sub{max-width:170px}.stage{min-height:360px}}
+</style>
+<meta name="iliri-color-version" content="AI-FIX-20260911-1">
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo">IC</div><div><h1>ILIRI COLOR AI</h1><div class="sub">Prek një faqe — AI zgjedh vetëm atë</div></div></div><button class="top" id="photoTop">Foto</button></header>
+<div class="card">
+<div class="stage" id="stage">
+<div class="empty" id="empty"><div class="cam">📷</div><div>Vendos një foto të dhomës</div><button id="choose" style="margin-top:14px;padding:12px 18px">Zgjidh foton</button></div>
+<canvas id="c" hidden></canvas><canvas id="o" class="overlay" hidden></canvas>
+<div class="ai" id="ai" hidden>AI SlimSAM</div><div class="status" id="status"></div>
+<div class="loading" id="loading"><div><div class="spin"></div><b id="loadTitle">Po ngarkohet AI…</b><div id="loadText" style="font-size:12px;color:#68736d;margin-top:6px">Herën e parë mund të zgjasë pak.</div></div></div>
+</div>
+<div class="controls" id="controls" hidden>
+<div class="title">Zgjidh ngjyrën</div><div class="palette" id="palette"></div>
+<div class="actions">
+<button class="secondary" id="undo"><span class="ico">↶</span>Kthim pas</button>
+<button class="secondary" id="paint"><span class="ico">▰</span>Lyej</button>
+<button class="secondary" id="compare"><span class="ico">◫</span>Krahaso</button>
+<button class="danger" id="clear"><span class="ico">⌫</span>Fshije</button>
+<button id="save"><span class="ico">▣</span>Ruaj foton</button>
+</div>
+<div class="hint">Zgjidh ngjyrën → prek faqen e murit → AI shënon vetëm sipërfaqen e zgjedhur → shtyp <b>Lyej</b>. Modeli AI shkarkohet në telefon herën e parë.</div>
+</div></div>
+<input id="file" type="file" accept="image/*">
+</div>
+<script type="module">
+import { env, SamModel, AutoProcessor, RawImage, Tensor } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.14.0';
+env.allowLocalModels=false;
+const MODEL='Xenova/slimsam-77-uniform';
+const c=document.getElementById('c'),ctx=c.getContext('2d',{willReadFrequently:true});
+const o=document.getElementById('o'),ox=o.getContext('2d');
+const file=document.getElementById('file'), empty=document.getElementById('empty'), controls=document.getElementById('controls'), stage=document.getElementById('stage');
+const loading=document.getElementById('loading'), loadTitle=document.getElementById('loadTitle'), status=document.getElementById('status'), ai=document.getElementById('ai');
+const colors=['#f2efe6','#e3ddd0','#d5cfc1','#c9b9a7','#b8a99a','#d7e0d2','#b9c9b6','#95aa91','#8fa7ae','#becbd0','#d6c4c7','#c5a7ab','#d9c696','#c9a86a','#af9075','#8e928e','#686d6a','#454b49'];
+let color=colors[0], original=null, history=[], model=null,processor=null,imageInputs=null,embeddings=null,mask=null,busy=false,compareData=null;
+const toast=t=>{status.textContent=t;status.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>status.classList.remove('show'),1800)};
+colors.forEach((x,i)=>{const b=document.createElement('button');b.className='sw'+(i===0?' on':'');b.style.background=x;b.onclick=()=>{color=x;[...document.querySelectorAll('.sw')].forEach(z=>z.classList.remove('on'));b.classList.add('on')};document.getElementById('palette').appendChild(b)});
+document.getElementById('choose').onclick=()=>file.click();document.getElementById('photoTop').onclick=()=>file.click();
+async function getAI(){if(model&&processor)return;loading.classList.add('show');loadTitle.textContent='Po ngarkohet AI…';try{[model,processor]=await Promise.all([SamModel.from_pretrained(MODEL,{quantized:true}),AutoProcessor.from_pretrained(MODEL)]);}catch(e){console.error(e);throw e}finally{loading.classList.remove('show')}}
+file.onchange=async()=>{const f=file.files?.[0];if(!f)return;const url=URL.createObjectURL(f);const img=new Image();img.onload=async()=>{let w=img.naturalWidth,h=img.naturalHeight,s=Math.min(1,1400/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);c.width=o.width=w;c.height=o.height=h;ctx.drawImage(img,0,0,w,h);original=ctx.getImageData(0,0,w,h);history=[];mask=null;c.hidden=o.hidden=false;empty.hidden=true;controls.hidden=false;ai.hidden=false;stage.style.minHeight='0';stage.style.aspectRatio=`${w}/${h}`;URL.revokeObjectURL(url);try{await getAI();loading.classList.add('show');loadTitle.textContent='AI po analizon foton…';const dataURL=c.toDataURL('image/jpeg',.92);const raw=await RawImage.read(dataURL);imageInputs=await processor(raw);embeddings=await model.get_image_embeddings(imageInputs);toast('AI gati — prek një faqe muri');}catch(e){toast('AI nuk u ngarkua — kontrollo internetin');console.error(e)}finally{loading.classList.remove('show')}};img.src=url;file.value=''};
+function xy(ev){const r=c.getBoundingClientRect();return [(ev.clientX-r.left)*c.width/r.width,(ev.clientY-r.top)*c.height/r.height]}
+c.addEventListener('pointerup',async ev=>{if(!embeddings||busy)return;busy=true;const [x,y]=xy(ev);loading.classList.add('show');loadTitle.textContent='AI po zgjedh faqen…';try{const resh=imageInputs.reshaped_input_sizes[0];const px=x/c.width*resh[1],py=y/c.height*resh[0];const points=new Tensor('float32',[px,py],[1,1,1,2]);const labels=new Tensor('int64',[1n],[1,1,1]);const out=await model({...embeddings,input_points:points,input_labels:labels});const masks=await processor.post_process_masks(out.pred_masks,imageInputs.original_sizes,imageInputs.reshaped_input_sizes);const t=masks[0];const H=t.dims[t.dims.length-2],W=t.dims[t.dims.length-1],K=t.dims[t.dims.length-3]||1;let best=0,bestScore=-Infinity;for(let k=0;k<Math.min(K,out.iou_scores.data.length);k++){if(out.iou_scores.data[k]>bestScore){bestScore=out.iou_scores.data[k];best=k}}const plane=H*W;mask=new Uint8Array(c.width*c.height);for(let yy=0;yy<c.height;yy++){const sy=Math.min(H-1,Math.floor(yy*H/c.height));for(let xx=0;xx<c.width;xx++){const sx=Math.min(W-1,Math.floor(xx*W/c.width));mask[yy*c.width+xx]=t.data[best*plane+sy*W+sx]?1:0}}drawMask();toast('Faqja u zgjodh — shtyp Lyej')}catch(e){console.error(e);toast('Provo ta prekësh përsëri murin')}finally{busy=false;loading.classList.remove('show')}});
+function drawMask(){ox.clearRect(0,0,o.width,o.height);if(!mask)return;const im=ox.createImageData(o.width,o.height),d=im.data,W=o.width,H=o.height;for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){let p=y*W+x;if(!mask[p])continue;let edge=!mask[p-1]||!mask[p+1]||!mask[p-W]||!mask[p+W],i=p*4;if(edge){d[i]=255;d[i+1]=112;d[i+2]=15;d[i+3]=255}else if((x+y)%5===0){d[i]=255;d[i+1]=112;d[i+2]=15;d[i+3]=45}}ox.putImageData(im,0,0)}
+function rgb(h){let n=parseInt(h.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255]}
+document.getElementById('paint').onclick=()=>{if(!mask){toast('Prek më parë faqen e murit');return}let cur=ctx.getImageData(0,0,c.width,c.height);history.push(cur);if(history.length>12)history.shift();let d=cur.data,[R,G,B]=rgb(color);for(let p=0;p<mask.length;p++){if(!mask[p])continue;let i=p*4,l=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2],target=.2126*R+.7152*G+.0722*B,k=Math.max(.45,Math.min(1.55,l/(target||1))),a=.78;d[i]=d[i]*(1-a)+Math.min(255,R*k)*a;d[i+1]=d[i+1]*(1-a)+Math.min(255,G*k)*a;d[i+2]=d[i+2]*(1-a)+Math.min(255,B*k)*a}ctx.putImageData(cur,0,0);mask=null;ox.clearRect(0,0,o.width,o.height);toast('Faqja u lye')};
+document.getElementById('undo').onclick=()=>{mask=null;ox.clearRect(0,0,o.width,o.height);if(history.length)ctx.putImageData(history.pop(),0,0);else toast('Nuk ka ndryshim për kthim')};
+document.getElementById('clear').onclick=()=>{mask=null;ox.clearRect(0,0,o.width,o.height);if(original)ctx.putImageData(original,0,0);history=[];toast('U kthye fotoja origjinale')};
+const comp=document.getElementById('compare');comp.onpointerdown=()=>{if(!original)return;compareData=ctx.getImageData(0,0,c.width,c.height);ctx.putImageData(original,0,0);o.style.visibility='hidden'};const end=()=>{if(compareData){ctx.putImageData(compareData,0,0);compareData=null;o.style.visibility='visible'}};comp.onpointerup=end;comp.onpointerleave=end;comp.onpointercancel=end;
+document.getElementById('save').onclick=()=>{if(!original)return;const a=document.createElement('a');a.download='ILIRI-COLOR.jpg';a.href=c.toDataURL('image/jpeg',.95);a.click();toast('Fotoja u ruajt')};
+</script>
+</body></html>
