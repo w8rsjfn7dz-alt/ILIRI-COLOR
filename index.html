@@ -1,1613 +1,511 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="sq">
-
 <head>
-
-<meta charset="utf-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<meta name="theme-color" content="#0d5b3d">
-
-<title>ILIRI COLOR AI</title>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#123b2d" />
+<title>ILIRI COLOR</title>
 <style>
-
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
+:root{
+  --bg:#f4f1e8;
+  --card:#ffffff;
+  --green:#123b2d;
+  --green2:#1d5b44;
+  --gold:#c7a85b;
+  --text:#18231d;
+  --muted:#6e776f;
+  --line:#ded9cc;
+}
+*{box-sizing:border-box}
 body{
-
   margin:0;
-
-  background:#f3f4f2;
-
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-
-  color:#17201c
-
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
-
-.app{max-width:900px;margin:auto;padding:10px 9px 25px}
-
-header{
-
+.app{
+  max-width:980px;
+  margin:0 auto;
+  padding:18px 14px 28px;
+}
+.header{
+  background:linear-gradient(145deg,var(--green),#0a2e23);
+  color:#fff;
+  border-radius:22px;
+  padding:18px 18px 16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  border:1px solid rgba(199,168,91,.45);
+}
+.brand{
   display:flex;
-
   align-items:center;
-
-  justify-content:space-between;
-
-  background:#0d5b3d;
-
-  color:#fff;
-
-  border-radius:18px;
-
-  padding:10px 12px;
-
-  margin-bottom:9px
-
+  gap:12px;
 }
-
-.brand{display:flex;align-items:center;gap:9px}
-
-.logo{
-
-  width:46px;
-
-  height:46px;
-
-  border-radius:13px;
-
-  background:#08472f;
-
-  color:#e2bb50;
-
-  display:grid;
-
-  place-items:center;
-
-  font-weight:900;
-
-  font-size:21px
-
+.logoDot{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 0 3px rgba(199,168,91,.18);
 }
-
-h1{font-size:20px;margin:0}
-
-.sub{font-size:11px;color:#dbe9e3;margin-top:2px}
-
-.top{
-
-  border:1px solid #ffffffa0;
-
-  background:transparent;
-
-  color:#fff;
-
-  border-radius:11px;
-
-  padding:9px 11px;
-
-  font-weight:800
-
+h1{
+  margin:0;
+  font-size:26px;
+  letter-spacing:.4px;
 }
-
+.sub{
+  margin-top:3px;
+  color:#e7e0c8;
+  font-size:13px;
+  letter-spacing:1.5px;
+}
 .card{
-
-  background:#fff;
-
-  border:1px solid #d7ddd9;
-
-  border-radius:18px;
-
-  padding:9px
-
+  margin-top:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px;
+  box-shadow:0 4px 18px rgba(0,0,0,.05);
 }
-
-.stage{
-
-  position:relative;
-
-  background:#e4e7e5;
-
-  border-radius:14px;
-
-  overflow:hidden;
-
-  min-height:410px;
-
+.upload{
   display:flex;
-
+  gap:10px;
   align-items:center;
-
-  justify-content:center
-
+  flex-wrap:wrap;
 }
-
-.empty{text-align:center;color:#68736d;padding:55px 20px}
-
-.cam{font-size:54px;margin-bottom:8px}
-
-canvas{display:block;width:100%;height:auto;touch-action:none}
-
-.overlay{
-
-  position:absolute;
-
-  inset:0;
-
-  pointer-events:none;
-
-  width:100%;
-
-  height:100%
-
-}
-
-.status{
-
-  position:absolute;
-
-  left:50%;
-
-  bottom:12px;
-
-  transform:translateX(-50%);
-
-  background:#102018e8;
-
-  color:#fff;
-
-  padding:8px 12px;
-
-  border-radius:999px;
-
-  font-size:12px;
-
-  white-space:nowrap;
-
-  display:none;
-
-  z-index:4
-
-}
-
-.status.show{display:block}
-
-.ai{
-
-  position:absolute;
-
-  left:10px;
-
-  top:10px;
-
-  background:#0d5b3de8;
-
-  color:#fff;
-
-  padding:7px 9px;
-
-  border-radius:999px;
-
-  font-size:11px;
-
-  font-weight:800;
-
-  z-index:4
-
-}
-
-.controls{padding:13px 1px 2px}
-
-.title{font-weight:900;margin:0 0 9px 2px}
-
-.palette{
-
-  display:flex;
-
-  gap:9px;
-
-  overflow-x:auto;
-
-  padding:3px 3px 11px
-
-}
-
-.sw{
-
-  flex:0 0 49px;
-
-  height:49px;
-
-  border-radius:50%;
-
-  border:4px solid #fff;
-
-  box-shadow:0 0 0 1px #bcc5c0;
-
-  position:relative
-
-}
-
-.sw.on{box-shadow:0 0 0 3px #0d5b3d}
-
-.sw.on:after{
-
-  content:"✓";
-
-  position:absolute;
-
-  inset:0;
-
-  display:grid;
-
-  place-items:center;
-
-  font-size:24px;
-
-  font-weight:900;
-
-  color:#0d5b3d;
-
-  text-shadow:0 1px #fff
-
-}
-
-.actions{
-
-  display:grid;
-
-  grid-template-columns:repeat(5,1fr);
-
-  gap:5px;
-
-  margin-top:10px
-
-}
-
-button{
-
+button,.fileLabel{
   border:0;
-
-  border-radius:12px;
-
-  padding:11px 4px;
-
-  background:#0d5b3d;
-
-  color:#fff;
-
-  font-weight:800;
-
-  font-size:11px
-
+  border-radius:14px;
+  padding:12px 15px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
-
+.fileLabel,.primary{
+  background:var(--green);
+  color:white;
+}
 .secondary{
-
-  background:#f6f7f6;
-
-  color:#1d2822;
-
-  border:1px solid #d7ddd9
-
+  background:#ece8de;
+  color:var(--text);
 }
-
 .danger{
-
-  background:#f6f7f6;
-
-  color:#812d2d;
-
-  border:1px solid #e0cccc
-
+  background:#8c2e2e;
+  color:#fff;
 }
-
-.ico{display:block;font-size:19px;margin-bottom:4px}
-
-.hint{
-
-  font-size:12px;
-
-  color:#68736d;
-
-  line-height:1.4;
-
-  margin:10px 3px 2px
-
-}
-
-.loading{
-
-  position:absolute;
-
-  inset:0;
-
-  background:#ffffffdc;
-
-  z-index:8;
-
-  display:none;
-
+.fileInput{display:none}
+.stageWrap{
+  margin-top:12px;
+  background:#111;
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  min-height:280px;
+  display:flex;
   align-items:center;
-
   justify-content:center;
-
+}
+#stage{
+  position:relative;
+  width:100%;
+  min-height:280px;
+  touch-action:none;
+  background:#222;
+}
+#roomImage{
+  display:none;
+  width:100%;
+  height:auto;
+  max-height:68vh;
+  object-fit:contain;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+#paintCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+.empty{
+  color:#fff;
   text-align:center;
-
-  padding:30px
-
+  padding:55px 18px;
+  width:100%;
 }
-
-.loading.show{display:flex}
-
-.spin{
-
-  width:34px;
-
-  height:34px;
-
-  border:4px solid #d7ddd9;
-
-  border-top-color:#0d5b3d;
-
+.empty strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:6px;
+}
+.hint{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.45;
+}
+.paletteTitle{
+  font-size:14px;
+  font-weight:800;
+  margin:0 0 10px;
+}
+.palette{
+  display:none;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+.palette.open{display:grid}
+.allColorsBtn{
+  width:100%;
+  margin:0 0 10px;
+  background:var(--green);
+  color:#fff;
+}
+.colorBtn{
+  padding:10px 8px;
+  border-radius:13px;
+  border:2px solid transparent;
+  background:#f6f3ec;
+  font-size:12px;
+  font-weight:700;
+  min-height:48px;
+}
+.colorBtn.active{
+  border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(18,59,45,.12);
+}
+.swatch{
+  display:block;
+  width:22px;height:22px;
   border-radius:50%;
-
-  animation:s 1s linear infinite;
-
-  margin:0 auto 12px
-
+  margin:0 auto 5px;
+  border:1px solid rgba(0,0,0,.16);
 }
-
-@keyframes s{to{transform:rotate(360deg)}}
-
-input{display:none}
-
-@media(max-width:420px){
-
-  .actions button{font-size:10px;padding:10px 2px}
-
-  .sub{max-width:170px}
-
-  .stage{min-height:360px}
-
+.actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:12px;
 }
-
+.actions button{padding:12px 8px}
+.compare{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.compare img{
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--line);
+}
+.compareTitle{
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 5px;
+}
+@media(max-width:560px){
+  .palette{grid-template-columns:repeat(3,1fr)}
+  h1{font-size:23px}
+  .actions{grid-template-columns:1fr 1fr}
+  .actions button:last-child{grid-column:1/-1}
+}
 </style>
-
 </head>
-
 <body>
-
 <div class="app">
-
-<header>
-
-  <div class="brand">
-
-    <div class="logo">IC</div>
-
-    <div>
-
-      <h1>ILIRI COLOR AI</h1>
-
-      <div class="sub">Prek një faqe — AI zgjedh vetëm atë</div>
-
+  <div class="header">
+    <div class="brand">
+      <span class="logoDot"></span>
+      <div>
+        <h1>ILIRI COLOR</h1>
+        <div class="sub">STUDIO E NGJYRAVE</div>
+      </div>
     </div>
-
   </div>
 
-  <button class="top" id="photoTop">Foto</button>
-
-</header>
-
-<div class="card">
-
-<div class="stage" id="stage">
-
-<div class="empty" id="empty">
-
-  <div class="cam">📷</div>
-
-  <div>Vendos një foto të dhomës</div>
-
-  <button id="choose" style="margin-top:14px;padding:12px 18px">
-
-    Zgjidh foton
-
-  </button>
-
-</div>
-
-<canvas id="c" hidden></canvas>
-
-<canvas id="o" class="overlay" hidden></canvas>
-
-<div class="ai" id="ai" hidden>AI SlimSAM</div>
-
-<div class="status" id="status"></div>
-
-<div class="loading" id="loading">
-
-  <div>
-
-    <div class="spin"></div>
-
-    <b id="loadTitle">Po ngarkohet AI…</b>
-
-    <div id="loadText" style="font-size:12px;color:#68736d;margin-top:6px">
-
-      Herën e parë mund të zgjasë pak.
-
+  <div class="card">
+    <div class="upload">
+      <label class="fileLabel" for="fileInput">＋ Ngarko foton</label>
+      <input class="fileInput" id="fileInput" type="file" accept="image/*" />
+      <button class="secondary" id="compareBtn">Krahaso</button>
     </div>
 
+    <div class="stageWrap">
+      <div id="stage">
+        <div id="empty" class="empty">
+          <strong>NGARKO NJË FOTO</strong>
+          Ngarko foton e dhomës
+        </div>
+        <img id="roomImage" alt="Fotoja e dhomës" />
+        <canvas id="paintCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="hint">
+      Zgjidh ngjyrën dhe prek një mur ose objekt. Prekja përdor një zonë të kufizuar rreth pikës që zgjodhe, jo gjithë foton.
+    </div>
   </div>
 
+  <div class="card">
+    <div class="paletteTitle">ZGJIDH NGJYRËN</div>
+    <button class="allColorsBtn" id="allColorsBtn">🎨 TË GJITHA NGJYRAT / COLORS</button>
+    <div class="palette" id="palette"></div>
+
+    <div class="actions">
+      <button class="secondary" id="undoBtn">↶ Kthim pas</button>
+      <button class="danger" id="clearBtn">Fshi</button>
+      <button class="primary" id="saveBtn">↓ Ruaj foton</button>
+    </div>
+
+    <div class="compare" id="compare">
+      <div>
+        <div class="compareTitle">Para</div>
+        <img id="beforeImg" alt="Para">
+      </div>
+      <div>
+        <div class="compareTitle">Pas</div>
+        <img id="afterImg" alt="Pas">
+      </div>
+    </div>
+  </div>
 </div>
 
-</div>
-
-<div class="controls" id="controls" hidden>
-
-<div class="title">Zgjidh ngjyrën</div>
-
-<div class="palette" id="palette"></div>
-
-<div class="actions">
-
-<button class="secondary" id="undo">
-
-<span class="ico">↶</span>
-
-Kthim pas
-
-</button>
-
-<button class="secondary" id="paint">
-
-<span class="ico">▰</span>
-
-Lyej
-
-</button>
-
-<button class="secondary" id="compare">
-
-<span class="ico">◫</span>
-
-Krahaso
-
-</button>
-
-<button class="danger" id="clear">
-
-<span class="ico">⌫</span>
-
-Fshije
-
-</button>
-
-<button id="save">
-
-<span class="ico">▣</span>
-
-Ruaj foton
-
-</button>
-
-</div>
-
-<div class="hint">
-
-Zgjidh ngjyrën → prek faqen e murit → AI shënon vetëm sipërfaqen e zgjedhur → shtyp <b>Lyej</b>.
-
-Modeli AI shkarkohet në telefon herën e parë.
-
-</div>
-
-</div>
-
-</div>
-
-<input id="file" type="file" accept="image/*">
-
-</div>
-
-<script type="module">
-
-import {
-
-  env,
-
-  SamModel,
-
-  AutoProcessor,
-
-  RawImage,
-
-  Tensor
-
-} from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.14.0';
-
-env.allowLocalModels=false;
-
-const MODEL='Xenova/slimsam-77-uniform';
-
-const c=document.getElementById('c');
-
-const ctx=c.getContext('2d',{willReadFrequently:true});
-
-const o=document.getElementById('o');
-
-const ox=o.getContext('2d');
-
-const file=document.getElementById('file');
-
-const empty=document.getElementById('empty');
-
-const controls=document.getElementById('controls');
-
-const stage=document.getElementById('stage');
-
-const loading=document.getElementById('loading');
-
-const loadTitle=document.getElementById('loadTitle');
-
-const status=document.getElementById('status');
-
-const ai=document.getElementById('ai');
-
-const colors=[
-
-'#f2efe6',
-
-'#e3ddd0',
-
-'#d5cfc1',
-
-'#c9b9a7',
-
-'#b8a99a',
-
-'#d7e0d2',
-
-'#b9c9b6',
-
-'#95aa91',
-
-'#8fa7ae',
-
-'#becbd0',
-
-'#d6c4c7',
-
-'#c5a7ab',
-
-'#d9c696',
-
-'#c9a86a',
-
-'#af9075',
-
-'#8e928e',
-
-'#686d6a',
-
-'#454b49'
-
+<script>
+const colors = [
+  ["E bardhë e ngrohtë","#F5F0E5"],
+  ["Gri perle","#D7D7D2"],
+  ["Rërë","#D8C3A5"],
+  ["Mjaltë","#C99A4A"],
+  ["Terrakotë","#B96643"],
+  ["Argjilë","#A56C52"],
+  ["Jeshile e lehtë","#A9B79C"],
+  ["Jeshile pylli","#49624C"],
+  ["Jeshile e thellë","#264236"],
+  ["Blu e lehtë","#AFC8D8"],
+  ["Blu deti","#3E6F8E"],
+  ["Blu nate","#26384F"],
+  ["Rozë e butë","#D9B7B5"],
+  ["Vjollcë gri","#8D8293"],
+  ["Gri e ngrohtë","#AAA39A"],
+  ["Gri ulliri","#858875"],
+  ["E verdhë","#D9B847"],
+  ["Antracit","#3C4141"]
 ];
 
-let color=colors[0];
+const fileInput = document.getElementById("fileInput");
+const roomImage = document.getElementById("roomImage");
+const canvas = document.getElementById("paintCanvas");
+const ctx = canvas.getContext("2d");
+const empty = document.getElementById("empty");
+const palette = document.getElementById("palette");
+const allColorsBtn = document.getElementById("allColorsBtn");
+const undoBtn = document.getElementById("undoBtn");
+const clearBtn = document.getElementById("clearBtn");
+const saveBtn = document.getElementById("saveBtn");
+const compareBtn = document.getElementById("compareBtn");
+const compare = document.getElementById("compare");
+const beforeImg = document.getElementById("beforeImg");
+const afterImg = document.getElementById("afterImg");
 
-let original=null;
+let selectedColor = colors[7][1];
+let history = [];
+let originalDataURL = "";
+let naturalW = 0, naturalH = 0;
 
-let history=[];
-
-let model=null;
-
-let processor=null;
-
-let imageInputs=null;
-
-let embeddings=null;
-
-let mask=null;
-
-let busy=false;
-
-let compareData=null;
-
-function toast(t){
-
-  status.textContent=t;
-
-  status.classList.add('show');
-
-  clearTimeout(toast.t);
-
-  toast.t=setTimeout(()=>{
-
-    status.classList.remove('show');
-
-  },1800);
-
+function hexToRgb(hex){
+  const v = hex.replace("#","");
+  return {
+    r:parseInt(v.slice(0,2),16),
+    g:parseInt(v.slice(2,4),16),
+    b:parseInt(v.slice(4,6),16)
+  };
 }
 
-colors.forEach((x,i)=>{
+allColorsBtn.addEventListener("click",()=>{
+  const opened = palette.classList.toggle("open");
+  allColorsBtn.textContent = opened ? "✕ MBYLL NGJYRAT" : "🎨 TË GJITHA NGJYRAT / COLORS";
+});
 
-  const b=document.createElement('button');
-
-  b.className='sw'+(i===0?' on':'');
-
-  b.style.background=x;
-
+colors.forEach((c,i)=>{
+  const b=document.createElement("button");
+  b.className="colorBtn"+(i===7?" active":"");
+  b.innerHTML=`<span class="swatch" style="background:${c[1]}"></span>${c[0]}`;
   b.onclick=()=>{
-
-    color=x;
-
-    document
-
-      .querySelectorAll('.sw')
-
-      .forEach(z=>z.classList.remove('on'));
-
-    b.classList.add('on');
-
+    selectedColor=c[1];
+    document.querySelectorAll(".colorBtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
   };
-
-  document.getElementById('palette').appendChild(b);
-
+  palette.appendChild(b);
 });
 
-document.getElementById('choose').onclick=()=>file.click();
-
-document.getElementById('photoTop').onclick=()=>file.click();
-
-async function getAI(){
-
-  if(model && processor) return;
-
-  loading.classList.add('show');
-
-  loadTitle.textContent='Po ngarkohet AI…';
-
-  try{
-
-    [model,processor]=await Promise.all([
-
-      SamModel.from_pretrained(
-
-        MODEL,
-
-        {quantized:true}
-
-      ),
-
-      AutoProcessor.from_pretrained(
-
-        MODEL
-
-      )
-
-    ]);
-
-  }catch(e){
-
-    console.error(e);
-
-    throw e;
-
-  }finally{
-
-    loading.classList.remove('show');
-
-  }
-
+function fitCanvas(){
+  if(!roomImage.src) return;
+  const rect=roomImage.getBoundingClientRect();
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  canvas.style.left=(roomImage.offsetLeft||0)+"px";
+  canvas.style.top=(roomImage.offsetTop||0)+"px";
+  canvas.style.width=rect.width+"px";
+  canvas.style.height=rect.height+"px";
+  canvas.width=Math.round(rect.width*dpr);
+  canvas.height=Math.round(rect.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  redrawHistory();
 }
 
-file.onchange=async()=>{
+function redrawHistory(){
+  const rect=canvas.getBoundingClientRect();
+  ctx.clearRect(0,0,rect.width,rect.height);
+  history.forEach(p=>drawPaint(p,false));
+}
 
-  const f=file.files?.[0];
+function drawPaint(p,save=true){
+  const rect=canvas.getBoundingClientRect();
+  const img=document.createElement("canvas");
+  img.width=Math.max(1,Math.round(rect.width));
+  img.height=Math.max(1,Math.round(rect.height));
+  const ictx=img.getContext("2d");
+  ictx.drawImage(roomImage,0,0,img.width,img.height);
 
+  const id=ictx.getImageData(0,0,img.width,img.height);
+  const data=id.data;
+  const sx=Math.max(0,Math.min(img.width-1,Math.floor(p.x*img.width)));
+  const sy=Math.max(0,Math.min(img.height-1,Math.floor(p.y*img.height)));
+  const idx=(sy*img.width+sx)*4;
+  const sr=data[idx], sg=data[idx+1], sb=data[idx+2];
+  const target=hexToRgb(p.color);
+  const tol=42;
+  const radius=Math.max(45,Math.min(img.width,img.height)*0.22);
+
+  const mask=new Uint8ClampedArray(img.width*img.height);
+  const qx=new Int32Array(img.width*img.height);
+  const qy=new Int32Array(img.width*img.height);
+  let qs=0, qe=0;
+  qx[qe]=sx; qy[qe]=sy; qe++;
+
+  const centerX=sx, centerY=sy;
+  function similar(x,y){
+    const di=(y*img.width+x)*4;
+    const dr=data[di]-sr, dg=data[di+1]-sg, db=data[di+2]-sb;
+    const dist=Math.sqrt(dr*dr+dg*dg+db*db);
+    const dx=x-centerX, dy=y-centerY;
+    return dist<tol && (dx*dx+dy*dy)<radius*radius;
+  }
+
+  while(qs<qe){
+    const x=qx[qs], y=qy[qs]; qs++;
+    const mi=y*img.width+x;
+    if(mask[mi]) continue;
+    mask[mi]=1;
+    if(!similar(x,y)) continue;
+
+    const di=mi*4;
+    const lum=(data[di]+data[di+1]+data[di+2])/765;
+    const alpha=.60;
+    data[di]=Math.round(data[di]*(1-alpha)+target.r*alpha*(0.78+lum*0.25));
+    data[di+1]=Math.round(data[di+1]*(1-alpha)+target.g*alpha*(0.78+lum*0.25));
+    data[di+2]=Math.round(data[di+2]*(1-alpha)+target.b*alpha*(0.78+lum*0.25));
+
+    if(x>0){qx[qe]=x-1;qy[qe]=y;qe++}
+    if(x<img.width-1){qx[qe]=x+1;qy[qe]=y;qe++}
+    if(y>0){qx[qe]=x;qy[qe]=y-1;qe++}
+    if(y<img.height-1){qx[qe]=x;qy[qe]=y+1;qe++}
+    if(qe>=qx.length-4) break;
+  }
+
+  ctx.globalAlpha=.96;
+  ctx.drawImage(img,0,0,rect.width,rect.height);
+  ctx.globalAlpha=1;
+
+  if(save) history.push(p);
+}
+
+function handlePoint(clientX,clientY){
+  if(!roomImage.src) return;
+  const r=canvas.getBoundingClientRect();
+  const x=(clientX-r.left)/r.width;
+  const y=(clientY-r.top)/r.height;
+  if(x<0||x>1||y<0||y>1) return;
+  drawPaint({x,y,color:selectedColor},true);
+}
+
+canvas.addEventListener("click",e=>handlePoint(e.clientX,e.clientY));
+canvas.addEventListener("touchend",e=>{
+  if(!e.changedTouches.length) return;
+  const t=e.changedTouches[0];
+  handlePoint(t.clientX,t.clientY);
+},{passive:true});
+
+fileInput.addEventListener("change",e=>{
+  const f=e.target.files && e.target.files[0];
   if(!f) return;
-
-  const url=URL.createObjectURL(f);
-
-  const img=new Image();
-
-  img.onload=async()=>{
-
-    let w=img.naturalWidth;
-
-    let h=img.naturalHeight;
-
-    const s=Math.min(
-
-      1,
-
-      1400/Math.max(w,h)
-
-    );
-
-    w=Math.round(w*s);
-
-    h=Math.round(h*s);
-
-    c.width=w;
-
-    c.height=h;
-
-    o.width=w;
-
-    o.height=h;
-
-    ctx.drawImage(
-
-      img,
-
-      0,
-
-      0,
-
-      w,
-
-      h
-
-    );
-
-    original=ctx.getImageData(
-
-      0,
-
-      0,
-
-      w,
-
-      h
-
-    );
-
-    history=[];
-
-    mask=null;
-
-    c.hidden=false;
-
-    o.hidden=false;
-
-    empty.hidden=true;
-
-    controls.hidden=false;
-
-    ai.hidden=false;
-
-    stage.style.minHeight='0';
-
-    stage.style.aspectRatio=`${w}/${h}`;
-
-    URL.revokeObjectURL(url);
-
-    try{
-
-      await getAI();
-
-      loading.classList.add('show');
-
-      loadTitle.textContent='AI po analizon foton…';
-
-      const dataURL=c.toDataURL(
-
-        'image/jpeg',
-
-        .92
-
-      );
-
-      const raw=await RawImage.read(dataURL);
-
-      imageInputs=await processor(raw);
-
-      embeddings=
-
-        await model.get_image_embeddings(
-
-          imageInputs
-
-        );
-
-      toast(
-
-        'AI gati — prek një faqe muri'
-
-      );
-
-    }catch(e){
-
-      toast(
-
-        'AI nuk u ngarkua — kontrollo internetin'
-
-      );
-
-      console.error(e);
-
-    }finally{
-
-      loading.classList.remove('show');
-
-    }
-
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    originalDataURL=ev.target.result;
+    roomImage.onload=()=>{
+      naturalW=roomImage.naturalWidth;
+      naturalH=roomImage.naturalHeight;
+      empty.style.display="none";
+      roomImage.style.display="block";
+      history=[];
+      requestAnimationFrame(fitCanvas);
+    };
+    roomImage.src=originalDataURL;
   };
-
-  img.src=url;
-
-  file.value='';
-
-};
-
-function xy(ev){
-
-  const r=c.getBoundingClientRect();
-
-  return[
-
-    (ev.clientX-r.left)*c.width/r.width,
-
-    (ev.clientY-r.top)*c.height/r.height
-
-  ];
-
-}
-
-c.addEventListener(
-
-'pointerup',
-
-async ev=>{
-
-  if(!embeddings || busy) return;
-
-  busy=true;
-
-  const [x,y]=xy(ev);
-
-  loading.classList.add('show');
-
-  loadTitle.textContent=
-
-    'AI po zgjedh faqen…';
-
-  try{
-
-    const resh=
-
-      imageInputs.reshaped_input_sizes[0];
-
-    const px=
-
-      x/c.width*resh[1];
-
-    const py=
-
-      y/c.height*resh[0];
-
-    const points=
-
-      new Tensor(
-
-        'float32',
-
-        [px,py],
-
-        [1,1,1,2]
-
-      );
-
-    const labels=
-
-      new Tensor(
-
-        'int64',
-
-        [1n],
-
-        [1,1,1]
-
-      );
-
-    const out=
-
-      await model({
-
-        ...embeddings,
-
-        input_points:points,
-
-        input_labels:labels
-
-      });
-
-    const masks=
-
-      await processor.post_process_masks(
-
-        out.pred_masks,
-
-        imageInputs.original_sizes,
-
-        imageInputs.reshaped_input_sizes
-
-      );
-
-    const t=masks[0];
-
-    const H=
-
-      t.dims[t.dims.length-2];
-
-    const W=
-
-      t.dims[t.dims.length-1];
-
-    const K=
-
-      t.dims[t.dims.length-3] || 1;
-
-    let best=0;
-
-    let bestScore=-Infinity;
-
-    for(
-
-      let k=0;
-
-      k<Math.min(
-
-        K,
-
-        out.iou_scores.data.length
-
-      );
-
-      k++
-
-    ){
-
-      if(
-
-        out.iou_scores.data[k]
-
-        >
-
-        bestScore
-
-      ){
-
-        bestScore=
-
-          out.iou_scores.data[k];
-
-        best=k;
-
-      }
-
-    }
-
-    const plane=H*W;
-
-    mask=
-
-      new Uint8Array(
-
-        c.width*c.height
-
-      );
-
-    for(
-
-      let yy=0;
-
-      yy<c.height;
-
-      yy++
-
-    ){
-
-      const sy=
-
-        Math.min(
-
-          H-1,
-
-          Math.floor(
-
-            yy*H/c.height
-
-          )
-
-        );
-
-      for(
-
-        let xx=0;
-
-        xx<c.width;
-
-        xx++
-
-      ){
-
-        const sx=
-
-          Math.min(
-
-            W-1,
-
-            Math.floor(
-
-              xx*W/c.width
-
-            )
-
-          );
-
-        mask[
-
-          yy*c.width+xx
-
-        ]=
-
-          t.data[
-
-            best*plane+
-
-            sy*W+
-
-            sx
-
-          ]
-
-          ?1:0;
-
-      }
-
-    }
-
-    drawMask();
-
-    toast(
-
-      'Faqja u zgjodh — shtyp Lyej'
-
-    );
-
-  }catch(e){
-
-    console.error(e);
-
-    toast(
-
-      'Provo ta prekësh përsëri murin'
-
-    );
-
-  }finally{
-
-    busy=false;
-
-    loading.classList.remove('show');
-
-  }
-
+  reader.readAsDataURL(f);
 });
 
-function drawMask(){
-
-  ox.clearRect(
-
-    0,
-
-    0,
-
-    o.width,
-
-    o.height
-
-  );
-
-  if(!mask) return;
-
-  const im=
-
-    ox.createImageData(
-
-      o.width,
-
-      o.height
-
-    );
-
-  const d=im.data;
-
-  const W=o.width;
-
-  const H=o.height;
-
-  for(
-
-    let y=1;
-
-    y<H-1;
-
-    y++
-
-  ){
-
-    for(
-
-      let x=1;
-
-      x<W-1;
-
-      x++
-
-    ){
-
-      const p=y*W+x;
-
-      if(!mask[p]) continue;
-
-      const edge=
-
-        !mask[p-1] ||
-
-        !mask[p+1] ||
-
-        !mask[p-W] ||
-
-        !mask[p+W];
-
-      const i=p*4;
-
-      if(edge){
-
-        d[i]=255;
-
-        d[i+1]=112;
-
-        d[i+2]=15;
-
-        d[i+3]=255;
-
-      }else if(
-
-        (x+y)%5===0
-
-      ){
-
-        d[i]=255;
-
-        d[i+1]=112;
-
-        d[i+2]=15;
-
-        d[i+3]=45;
-
-      }
-
-    }
-
-  }
-
-  ox.putImageData(
-
-    im,
-
-    0,
-
-    0
-
-  );
-
-}
-
-function rgb(h){
-
-  const n=
-
-    parseInt(
-
-      h.slice(1),
-
-      16
-
-    );
-
-  return[
-
-    (n>>16)&255,
-
-    (n>>8)&255,
-
-    n&255
-
-  ];
-
-}
-
-document
-
-.getElementById('paint')
-
-.onclick=()=>{
-
-  if(!mask){
-
-    toast(
-
-      'Prek më parë faqen e murit'
-
-    );
-
-    return;
-
-  }
-
-  const cur=
-
-    ctx.getImageData(
-
-      0,
-
-      0,
-
-      c.width,
-
-      c.height
-
-    );
-
-  history.push(cur);
-
-  if(history.length>12)
-
-    history.shift();
-
-  const d=cur.data;
-
-  const [R,G,B]=rgb(color);
-
-  for(
-
-    let p=0;
-
-    p<mask.length;
-
-    p++
-
-  ){
-
-    if(!mask[p])
-
-      continue;
-
-    const i=p*4;
-
-    const l=
-
-      .2126*d[i]
-
-      +
-
-      .7152*d[i+1]
-
-      +
-
-      .0722*d[i+2];
-
-    const target=
-
-      .2126*R
-
-      +
-
-      .7152*G
-
-      +
-
-      .0722*B;
-
-    const k=
-
-      Math.max(
-
-        .45,
-
-        Math.min(
-
-          1.55,
-
-          l/(target||1)
-
-        )
-
-      );
-
-    const a=.78;
-
-    d[i]=
-
-      d[i]*(1-a)
-
-      +
-
-      Math.min(
-
-        255,
-
-        R*k
-
-      )*a;
-
-    d[i+1]=
-
-      d[i+1]*(1-a)
-
-      +
-
-      Math.min(
-
-        255,
-
-        G*k
-
-      )*a;
-
-    d[i+2]=
-
-      d[i+2]*(1-a)
-
-      +
-
-      Math.min(
-
-        255,
-
-        B*k
-
-      )*a;
-
-  }
-
-  ctx.putImageData(
-
-    cur,
-
-    0,
-
-    0
-
-  );
-
-  mask=null;
-
-  ox.clearRect(
-
-    0,
-
-    0,
-
-    o.width,
-
-    o.height
-
-  );
-
-  toast('Faqja u lye');
-
+undoBtn.onclick=()=>{
+  if(!history.length) return;
+  history.pop();
+  redrawHistory();
 };
 
-document
-
-.getElementById('undo')
-
-.onclick=()=>{
-
-  mask=null;
-
-  ox.clearRect(
-
-    0,
-
-    0,
-
-    o.width,
-
-    o.height
-
-  );
-
-  if(history.length){
-
-    ctx.putImageData(
-
-      history.pop(),
-
-      0,
-
-      0
-
-    );
-
-  }else{
-
-    toast(
-
-      'Nuk ka ndryshim për kthim'
-
-    );
-
-  }
-
-};
-
-document
-
-.getElementById('clear')
-
-.onclick=()=>{
-
-  mask=null;
-
-  ox.clearRect(
-
-    0,
-
-    0,
-
-    o.width,
-
-    o.height
-
-  );
-
-  if(original){
-
-    ctx.putImageData(
-
-      original,
-
-      0,
-
-      0
-
-    );
-
-  }
-
+clearBtn.onclick=()=>{
   history=[];
-
-  toast(
-
-    'U kthye fotoja origjinale'
-
-  );
-
+  redrawHistory();
+  compare.style.display="none";
 };
 
-const comp=
+function mergedDataURL(){
+  if(!roomImage.src) return "";
+  const out=document.createElement("canvas");
+  out.width=naturalW;
+  out.height=naturalH;
+  const o=out.getContext("2d");
+  o.drawImage(roomImage,0,0,naturalW,naturalH);
 
-  document.getElementById(
+  const overlay=document.createElement("canvas");
+  overlay.width=canvas.width;
+  overlay.height=canvas.height;
+  const oc=overlay.getContext("2d");
+  oc.drawImage(canvas,0,0);
 
-    'compare'
+  o.drawImage(overlay,0,0,overlay.width,overlay.height,0,0,naturalW,naturalH);
+  return out.toDataURL("image/jpeg",0.95);
+}
 
-  );
-
-comp.onpointerdown=()=>{
-
-  if(!original)
-
-    return;
-
-  compareData=
-
-    ctx.getImageData(
-
-      0,
-
-      0,
-
-      c.width,
-
-      c.height
-
-    );
-
-  ctx.putImageData(
-
-    original,
-
-    0,
-
-    0
-
-  );
-
-  o.style.visibility='hidden';
-
-};
-
-const end=()=>{
-
-  if(compareData){
-
-    ctx.putImageData(
-
-      compareData,
-
-      0,
-
-      0
-
-    );
-
-    compareData=null;
-
-    o.style.visibility='visible';
-
-  }
-
-};
-
-comp.onpointerup=end;
-
-comp.onpointerleave=end;
-
-comp.onpointercancel=end;
-
-document
-
-.getElementById('save')
-
-.onclick=()=>{
-
-  if(!original)
-
-    return;
-
-  const a=
-
-    document.createElement('a');
-
-  a.download='ILIRI-COLOR.jpg';
-
-  a.href=
-
-    c.toDataURL(
-
-      'image/jpeg',
-
-      .95
-
-    );
-
+saveBtn.onclick=()=>{
+  const data=mergedDataURL();
+  if(!data) return alert("Ngarko një foto më parë.");
+  const a=document.createElement("a");
+  a.href=data;
+  a.download="ILIRI-COLOR.jpg";
+  document.body.appendChild(a);
   a.click();
-
-  toast(
-
-    'Fotoja u ruajt'
-
-  );
-
+  a.remove();
 };
 
+compareBtn.onclick=()=>{
+  if(!roomImage.src) return alert("Ngarko një foto më parë.");
+  beforeImg.src=originalDataURL;
+  afterImg.src=mergedDataURL();
+  compare.style.display=compare.style.display==="grid"?"none":"grid";
+};
+
+window.addEventListener("resize",()=>requestAnimationFrame(fitCanvas));
 </script>
-
 </body>
-
 </html>
